@@ -151,11 +151,15 @@ export function SettingsScreen() {
                 id="locale"
                 value={locale}
                 onChange={(event) => setLocale(event.target.value as 'fa' | 'en')}
+                aria-describedby="locale-hint"
                 className="h-9 rounded-md border bg-background px-2 text-sm"
               >
                 <option value="fa">فارسی</option>
-                <option value="en">English</option>
+                <option value="en">English (layout only)</option>
               </select>
+              <p id="locale-hint" className="text-[11px] text-muted-foreground">
+                رابط فعلاً فارسی است؛ انتخاب English فقط جهت چیدمان (LTR) را تغییر می‌دهد.
+              </p>
             </div>
           </div>
           <Button
