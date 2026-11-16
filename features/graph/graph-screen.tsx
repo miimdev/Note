@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toPersianDigits } from '@/lib/jalali';
 import { buildLocalGraph } from '@/lib/graph';
+import { noteHref } from '@/lib/paths';
 
 const GraphCanvas = dynamic(() => import('./graph-canvas').then((mod) => mod.GraphCanvas), {
   ssr: false,
@@ -119,7 +120,7 @@ export function GraphScreen() {
           <Button
             size="sm"
             variant="outline"
-            onClick={() => router.push(`/notes/${selectedNote.id}`)}
+            onClick={() => router.push(noteHref(selectedNote.id))}
           >
             باز کردن یادداشت
           </Button>

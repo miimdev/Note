@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { formatJalaliDateTime, relativeTime } from '@/lib/jalali';
 import { requestNotificationPermission } from './notifications';
 import { getDb } from '@/lib/db/local-db';
+import { noteHref } from '@/lib/paths';
 
 export function RemindersScreen() {
   const { userId } = useSync();
@@ -121,7 +122,7 @@ export function RemindersScreen() {
                 </span>
                 <div className="min-w-0 flex-1">
                   <Link
-                    href={`/notes/${reminder.note_id}`}
+                    href={noteHref(reminder.note_id)}
                     className="truncate font-medium hover:underline"
                   >
                     {noteTitle(reminder.note_id)}

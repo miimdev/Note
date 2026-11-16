@@ -17,6 +17,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { formatJalaliDate } from '@/lib/jalali';
+import { appUrl, sharedNoteHref } from '@/lib/paths';
 
 type Props = {
   noteId: string;
@@ -41,6 +42,9 @@ export function ShareDialog({ noteId, userId, open, onOpenChange }: Props) {
   const [withPasswordless, setWithPasswordless] = React.useState(true);
 
   const origin = typeof window === 'undefined' ? '' : window.location.origin;
+  // Static builds serve share pages from `/s?id=<token>` and live under a base path.
+  const shareUrl = (token: string) =>
+    origin ? appUrl(sharedNoteHref(token)) : sharedNoteHref(token);
 
   const load = React.useCallback(async () => {
     if (!open) return;
@@ -79,7 +83,7 @@ export function ShareDialog({ noteId, userId, open, onOpenChange }: Props) {
 
       if (error) throw error;
       setShares([data as SharedNote, ...shares]);
-      await navigator.clipboard.writeText(`${origin}/s/${token}`).catch(() => undefined);
+      await navigator.clipboard.writeText(shareUrl(token)).catch(() => undefined);
       toast.success('لینک عمومی ساخته و کپی شد');
     } catch (error) {
       toast.error('ساخت لینک ناموفق بود', {
@@ -105,7 +109,7 @@ export function ShareDialog({ noteId, userId, open, onOpenChange }: Props) {
   };
 
   const copy = async (token: string) => {
-    await navigator.clipboard.writeText(`${origin}/s/${token}`);
+    await navigator.clipboard.writeText(shareUrl(token));
     toast.success('لینک کپی شد');
   };
 
@@ -170,7 +174,7 @@ export function ShareDialog({ noteId, userId, open, onOpenChange }: Props) {
               >
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-mono text-[11px]" dir="ltr">
-                    {origin}/s/{share.token}
+                    {shareUrl(share.token)}
                   </p>
                   <p className="mt-0.5 text-[10px] text-muted-foreground">
                     {share.is_active ? 'فعال' : 'غیرفعال'}

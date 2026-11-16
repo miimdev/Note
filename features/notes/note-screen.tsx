@@ -38,6 +38,7 @@ import { ReminderDialog } from '@/features/reminders/reminder-dialog';
 import { ExportMenu } from '@/features/export/export-menu';
 import { AiPanel } from '@/features/ai/ai-panel';
 import { cn } from '@/lib/utils';
+import { noteHref } from '@/lib/paths';
 
 const NoteEditor = dynamic(
   () => import('@/features/editor/components/note-editor').then((mod) => mod.NoteEditor),
@@ -108,7 +109,7 @@ export function NoteScreen({ noteId }: { noteId: string }) {
     async (title: string) => {
       const existing = titleIndex.get(title.trim().toLowerCase());
       if (existing) {
-        router.push(`/notes/${existing}`);
+        router.push(noteHref(existing));
         return;
       }
       toast.info(`یادداشتی با عنوان «${title}» وجود ندارد`, {

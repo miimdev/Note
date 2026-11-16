@@ -1,9 +1,12 @@
 /* Note — service worker (offline shell + static asset cache) */
+// Registered from <base>/sw.js, so `self.registration.scope` tells us where the
+// app lives (root, or /<repo>/ on GitHub Pages).
+const BASE = new URL(self.registration.scope).pathname.replace(/\/$/, '');
 const VERSION = 'note-v1';
 const SHELL_CACHE = `${VERSION}-shell`;
 const ASSET_CACHE = `${VERSION}-assets`;
 
-const SHELL_ROUTES = ['/', '/offline'];
+const SHELL_ROUTES = [`${BASE}/`, `${BASE}/offline`];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -32,7 +35,7 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
-  if (url.pathname.startsWith('/api/')) return;
+  if (url.pathname.startsWith(`${BASE}/api/`)) return;
 
   // Navigations: network first, fall back to the cached shell when offline.
   if (request.mode === 'navigate') {
@@ -46,7 +49,7 @@ self.addEventListener('fetch', (event) => {
         .catch(async () => {
           const cached = await caches.match(request);
           if (cached) return cached;
-          const offline = await caches.match('/offline');
+          const offline = await caches.match(`${BASE}/offline`);
           if (offline) return offline;
           return new Response('آفلاین هستید.', { status: 503, headers: { 'content-type': 'text/plain; charset=utf-8' } });
         }),
@@ -73,7 +76,7 @@ self.addEventListener('fetch', (event) => {
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  const target = event.notification.data?.url || '/reminders';
+  const target = event.notification.data?.url || `${BASE}/reminders`;
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
       for (const client of clients) {

@@ -3,6 +3,7 @@
 import type { NoteContent } from '@/types/database.types';
 import { docToHtml, docToMarkdown } from '@/lib/editor/content';
 import { sanitizeHtml } from '@/lib/editor/sanitize';
+import { printHref, withBasePath } from '@/lib/paths';
 
 export function downloadBlob(content: BlobPart, filename: string, mime: string) {
   const blob = new Blob([content], { type: mime });
@@ -85,12 +86,12 @@ export function exportHtml(title: string, content: NoteContent) {
 
 export function exportPdf(title: string, noteId: string) {
   const printWindow = window.open(
-    `/print/${noteId}?auto=1`,
+    withBasePath(printHref(noteId, true)),
     '_blank',
     'noopener,width=900,height=1200',
   );
   if (!printWindow) {
-    window.location.href = `/print/${noteId}`;
+    window.location.href = withBasePath(printHref(noteId));
     return;
   }
   printWindow.focus();

@@ -31,6 +31,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { docToText, emptyDoc } from '@/lib/editor/content';
+import { noteHref } from '@/lib/paths';
 
 const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   calendar: Calendar,
@@ -55,7 +56,7 @@ export function TemplatesScreen() {
     setBusyId(template.id);
     try {
       const id = await createNote({ title: template.name, content: template.content });
-      if (id) router.push(`/notes/${id}`);
+      if (id) router.push(noteHref(id));
     } finally {
       setBusyId(null);
     }

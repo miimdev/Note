@@ -15,3 +15,14 @@ test-results
 playwright-report
 .vercel
 .supabase
+
+# Server-only routes are kept in /server and copied into place by
+# scripts/prepare-server-build.mjs (the GitHub Pages build omits them).
+/middleware.ts
+/app/api/
+/app/(auth)/callback/route.ts
+/app/print/[id]/
+/app/s/[token]/
+/app/(workspace)/notes/[id]/
+/app/(workspace)/folders/[id]/
+/app/(workspace)/tags/[slug]/

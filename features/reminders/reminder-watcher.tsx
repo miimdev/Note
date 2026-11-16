@@ -8,6 +8,7 @@ import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { useSync } from '@/features/sync/sync-provider';
 import { useNotesStore } from '@/store/notes-store';
 import { showLocalNotification } from './notifications';
+import { noteHref } from '@/lib/paths';
 
 const CHECK_INTERVAL = 30_000;
 
@@ -54,7 +55,7 @@ export function ReminderWatcher() {
         );
         toast(title, {
           description: 'زمان یادآوری رسید',
-          action: { label: 'بازکردن', onClick: () => router.push(`/notes/${reminder.note_id}`) },
+          action: { label: 'بازکردن', onClick: () => router.push(noteHref(reminder.note_id)) },
         });
 
         await db.reminders.update(reminder.id, {

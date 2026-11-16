@@ -9,6 +9,7 @@ import { useNotesStore } from '@/store/notes-store';
 import type { NoteLink } from '@/types/database.types';
 import { cn } from '@/lib/utils';
 import { buildLocalLinks } from '@/lib/graph';
+import { noteHref } from '@/lib/paths';
 
 type RelatedNote = { id: string; title: string; reason: string };
 
@@ -99,7 +100,7 @@ export function BacklinksPanel({ noteId }: Props) {
               link.target_note_id ? (
                 <li key={link.id}>
                   <Link
-                    href={`/notes/${link.target_note_id}`}
+                    href={noteHref(link.target_note_id)}
                     className="flex items-center gap-1.5 rounded-md px-1.5 py-1 text-primary hover:bg-accent"
                   >
                     <Link2 className="h-3 w-3 shrink-0" />
@@ -142,7 +143,7 @@ export function BacklinksPanel({ noteId }: Props) {
             {incoming.map((link) => (
               <li key={link.id}>
                 <Link
-                  href={`/notes/${link.source_note_id}`}
+                  href={noteHref(link.source_note_id)}
                   className="flex items-center gap-1.5 rounded-md px-1.5 py-1 hover:bg-accent"
                 >
                   <ArrowDownLeft className="h-3 w-3 shrink-0 text-muted-foreground" />
@@ -165,7 +166,7 @@ export function BacklinksPanel({ noteId }: Props) {
             {related.map((note) => (
               <li key={note.id}>
                 <Link
-                  href={`/notes/${note.id}`}
+                  href={noteHref(note.id)}
                   className="flex items-center justify-between gap-2 rounded-md px-1.5 py-1 hover:bg-accent"
                 >
                   <span className="truncate">{note.title || 'بدون عنوان'}</span>

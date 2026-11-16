@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { markdownToDoc, splitMarkdownTitle } from '@/lib/markdown-import';
 import { useNoteActions } from '@/features/notes/use-note-actions';
+import { noteHref } from '@/lib/paths';
 
 const MAX_IMPORT_BYTES = 2 * 1024 * 1024;
 
@@ -32,7 +33,7 @@ export function ImportMarkdownButton({ folderId = null }: { folderId?: string | 
       }
       if (lastId) {
         toast.success('فایل‌ها وارد شدند');
-        router.push(`/notes/${lastId}`);
+        router.push(noteHref(lastId));
       }
     } catch (error) {
       toast.error('ورود فایل ناموفق بود', {

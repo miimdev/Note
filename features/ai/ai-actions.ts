@@ -2,8 +2,14 @@
 
 import { aiActionSchema, type AiActionInput } from '@/lib/validation/schemas';
 
+/**
+ * The assistant needs a server: it calls `/api/ai`, which holds the OpenRouter
+ * key. A static export (GitHub Pages) has no route handlers, so the flag is
+ * forced off there even if someone enables it in the environment.
+ */
 export const AI_ENABLED =
-  process.env.NEXT_PUBLIC_AI_ENABLED === 'true' || process.env.NEXT_PUBLIC_AI_ENABLED === '1';
+  process.env.NEXT_PUBLIC_STATIC_EXPORT !== 'true' &&
+  (process.env.NEXT_PUBLIC_AI_ENABLED === 'true' || process.env.NEXT_PUBLIC_AI_ENABLED === '1');
 
 export type AiActionResult = {
   result: string;

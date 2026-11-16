@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { withBasePath } from '@/lib/paths';
 
 export function ServiceWorkerRegistrar() {
   useEffect(() => {
@@ -8,7 +9,10 @@ export function ServiceWorkerRegistrar() {
     if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return;
 
     const register = () => {
-      navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(() => {
+      // The scope has to match the deployment path, otherwise GitHub Pages
+      // rejects a worker registered from `/Note/sw.js` with scope `/`.
+      const swUrl = withBasePath('/sw.js');
+      navigator.serviceWorker.register(swUrl, { scope: withBasePath('/') }).catch(() => {
         /* registration failures are non-fatal: the app still works online */
       });
     };

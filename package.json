@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "node scripts/prepare-server-build.mjs && next dev",
+    "build": "node scripts/prepare-server-build.mjs && next build",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
@@ -12,7 +12,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "gen:types": "supabase gen types typescript --project-id $SUPABASE_PROJECT_ID --schema public > types/database.types.ts"
+    "gen:types": "supabase gen types typescript --project-id $SUPABASE_PROJECT_ID --schema public > types/database.types.ts",
+    "build:static": "node scripts/prepare-server-build.mjs --clean && next build && node scripts/post-export.mjs"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",

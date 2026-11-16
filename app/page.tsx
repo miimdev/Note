@@ -1,22 +1,9 @@
-import { redirect } from 'next/navigation';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { HomeRedirect } from '@/components/home-redirect';
 
-export const dynamic = 'force-dynamic';
-
-export default async function HomePage() {
-  // `redirect()` throws, so it must never run inside a try/catch: the catch
-  // below would swallow the NEXT_REDIRECT for signed-in users.
-  let signedIn = false;
-
-  try {
-    const supabase = await createSupabaseServerClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    signedIn = Boolean(user);
-  } catch {
-    signedIn = false;
-  }
-
-  redirect(signedIn ? '/notes' : '/login');
+/**
+ * Landing page. Keeping it a client redirect means the same file works with a
+ * server and as a static export (GitHub Pages) — see components/home-redirect.
+ */
+export default function HomePage() {
+  return <HomeRedirect />;
 }

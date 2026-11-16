@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { slugify } from '@/lib/utils';
 import { TAG_COLORS } from './tag-colors';
+import { tagHref } from '@/lib/paths';
 
 export function TagsManager() {
   const { userId } = useSync();
@@ -122,7 +123,7 @@ export function TagsManager() {
               >
                 <Hash className="h-3.5 w-3.5" />
               </span>
-              <Link href={`/tags/${tag.slug}`} className="flex-1 truncate text-sm hover:underline">
+              <Link href={tagHref(tag.slug)} className="flex-1 truncate text-sm hover:underline">
                 {tag.name}
               </Link>
               <span className="text-xs text-muted-foreground">

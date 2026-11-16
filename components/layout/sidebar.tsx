@@ -38,6 +38,7 @@ import { TagList } from '@/features/tags/tag-list';
 import { NewFolderDialog } from '@/features/folders/new-folder-dialog';
 import { useNoteActions } from '@/features/notes/use-note-actions';
 import { toPersianDigits } from '@/lib/jalali';
+import { noteHref } from '@/lib/paths';
 
 const NAV_ITEMS = [
   { href: '/notes', label: 'همه یادداشت‌ها', icon: FileText },
@@ -113,7 +114,7 @@ export function Sidebar() {
     setCreating(true);
     try {
       const id = await createNote({});
-      if (id) router.push(`/notes/${id}`);
+      if (id) router.push(noteHref(id));
     } finally {
       setCreating(false);
     }

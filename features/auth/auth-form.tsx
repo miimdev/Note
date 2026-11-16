@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 import { getSupabaseBrowserClient, isSupabaseConfigured } from '@/lib/supabase/client';
+import { IS_STATIC_EXPORT } from '@/lib/paths';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -42,6 +43,18 @@ const COPY: Record<Mode, { title: string; description: string; submit: string }>
   },
 };
 
+/**
+ * Base URL Supabase should redirect back to.
+ *
+ * A page is always the better source of truth than an env var: on GitHub Pages
+ * the app lives under `/<repo>/`, and `NEXT_PUBLIC_SITE_URL` may still point at
+ * the apex domain. So the current origin is used everywhere.
+ */
+function authBaseUrl(): string {
+  if (IS_STATIC_EXPORT) return window.location.origin;
+  return process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
+}
+
 export function AuthForm({ mode }: { mode: Mode }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -60,7 +73,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
     const displayName = String(formData.get('displayName') ?? '');
     const confirmPassword = String(formData.get('confirmPassword') ?? '');
     const client = getSupabaseBrowserClient();
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
+    const siteUrl = authBaseUrl();
 
     setLoading(true);
     try {
@@ -133,7 +146,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
     setError(null);
     try {
       const client = getSupabaseBrowserClient();
-      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
+      const siteUrl = authBaseUrl();
       const { error: oauthError } = await client.auth.signInWithOAuth({
         provider: 'google',
         options: { redirectTo: `${siteUrl}/callback?next=${encodeURIComponent(nextPath)}` },

@@ -2,8 +2,9 @@ import type { Metadata, Viewport } from 'next';
 import { Toaster } from 'sonner';
 import { Providers } from '@/components/providers';
 import { DirectionProvider } from '@/components/direction-provider';
-import { getServerLocale } from '@/lib/i18n/server';
 import { inter, vazirmatn } from '@/lib/fonts';
+import { DEFAULT_LOCALE } from '@/lib/i18n/locale';
+import { BASE_PATH } from '@/lib/paths';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -14,11 +15,11 @@ export const metadata: Metadata = {
   description:
     'دفترچه یادداشت هوشمند با ادیتور بلاکی، شبکه دانش، جستجوی دوزبانه، حالت آفلاین و همگام‌سازی لحظه‌ای.',
   applicationName: 'Note',
-  manifest: '/manifest.webmanifest',
+  manifest: `${BASE_PATH}/manifest.webmanifest`,
   appleWebApp: { capable: true, title: 'Note', statusBarStyle: 'default' },
   icons: {
-    icon: [{ url: '/icons/icon.svg', type: 'image/svg+xml' }],
-    apple: [{ url: '/icons/icon-192.png' }],
+    icon: [{ url: `${BASE_PATH}/icons/icon.svg`, type: 'image/svg+xml' }],
+    apple: [{ url: `${BASE_PATH}/icons/icon-192.png` }],
   },
   formatDetection: { telephone: false },
 };
@@ -33,8 +34,10 @@ export const viewport: Viewport = {
   ],
 };
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const locale = await getServerLocale();
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  // A static export cannot read the locale cookie at build time, so the default
+  // survives into the HTML and DirectionProvider corrects <html dir> on mount.
+  const locale = DEFAULT_LOCALE;
   const dir = locale === 'fa' ? 'rtl' : 'ltr';
 
   return (

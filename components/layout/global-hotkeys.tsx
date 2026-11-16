@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useHotkeys } from '@/hooks/use-hotkeys';
 import { useUiStore } from '@/store/ui-store';
 import { useNoteActions } from '@/features/notes/use-note-actions';
+import { noteHref } from '@/lib/paths';
 
 const ALLOW_IN_EDITOR = ['mod+k', 'mod+shift+f', 'mod+n'];
 
@@ -16,7 +17,7 @@ export function GlobalHotkeys() {
     {
       'mod+k': () => setCommandPaletteOpen(true),
       'mod+n': () => {
-        void createNote({}).then((id) => id && router.push(`/notes/${id}`));
+        void createNote({}).then((id) => id && router.push(noteHref(id)));
       },
       'mod+shift+f': () => toggleFocusMode(),
       'mod+shift+e': () => router.push('/search'),

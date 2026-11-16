@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useFolderActions } from './use-folder-actions';
 import { RenameFolderDialog } from './rename-folder-dialog';
+import { IS_STATIC_EXPORT, folderHref } from '@/lib/paths';
 
 export type FolderNode = Folder & { children: FolderNode[] };
 
@@ -59,6 +60,7 @@ function FolderBranch({
   node,
   counts,
   pathname,
+  currentId,
   onRename,
   onDelete,
   depth,
@@ -66,13 +68,18 @@ function FolderBranch({
   node: FolderNode;
   counts: Map<string, number>;
   pathname: string;
+  currentId?: string | null;
   onRename: (folder: Folder) => void;
   onDelete: (folder: Folder) => void;
   depth: number;
 }) {
   const [open, setOpen] = React.useState(true);
-  const href = `/folders/${node.id}`;
-  const active = pathname === href;
+  const href = folderHref(node.id);
+  // In a static build every folder lives on `/folders?id=…`, so highlight the
+  // tree only when the id in the query string matches this node.
+  const active = IS_STATIC_EXPORT
+    ? pathname === '/folders' && currentId === node.id
+    : pathname === href;
   const count = counts.get(node.id) ?? 0;
   const hasChildren = node.children.length > 0;
 

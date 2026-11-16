@@ -35,7 +35,8 @@ function lcsTable(a: string[], b: string[]): number[][] {
 
   for (let i = a.length - 1; i >= 0; i -= 1) {
     for (let j = b.length - 1; j >= 0; j -= 1) {
-      table[i]![j] = a[i] === b[j] ? table[i + 1]![j + 1]! + 1 : Math.max(table[i + 1]![j]!, table[i]![j + 1]!);
+      table[i]![j] =
+        a[i] === b[j] ? table[i + 1]![j + 1]! + 1 : Math.max(table[i + 1]![j]!, table[i]![j + 1]!);
     }
   }
 
@@ -83,7 +84,10 @@ export function diffLines(before: string, after: string): DiffLine[] {
 }
 
 /** Word-level diff of two lines, used to highlight what changed inside a line. */
-export function diffWords(before: string, after: string): { before: WordSegment[]; after: WordSegment[] } {
+export function diffWords(
+  before: string,
+  after: string,
+): { before: WordSegment[]; after: WordSegment[] } {
   const a = before.split(/(\s+)/).filter((part) => part.length > 0);
   const b = after.split(/(\s+)/).filter((part) => part.length > 0);
   const table = lcsTable(a.map(normalizeFa), b.map(normalizeFa));

@@ -14,6 +14,7 @@ import { HighlightText } from './highlight-text';
 import { buildSearchParam, matchesQuery, normalizeFa } from '@/lib/search-query';
 import { relativeTime, toPersianDigits } from '@/lib/jalali';
 import { useDebouncedValue } from '@/hooks/use-debounced-value';
+import { noteHref } from '@/lib/paths';
 
 type Mode = 'db' | 'local';
 
@@ -146,7 +147,7 @@ export function SearchScreen() {
         {results.map((result) => (
           <li key={result.id}>
             <Link
-              href={`/notes/${result.id}`}
+              href={noteHref(result.id)}
               className="block rounded-xl border bg-card p-3 transition-colors hover:border-primary/40"
             >
               <p className="font-medium">

@@ -19,6 +19,7 @@ import { toPersianDigits } from '@/lib/jalali';
 import { NoteEditor } from '@/features/editor/components/note-editor';
 import { useSync } from '@/features/sync/sync-provider';
 import { cn } from '@/lib/utils';
+import { noteHref } from '@/lib/paths';
 
 export function DailyScreen() {
   const router = useRouter();
@@ -120,7 +121,7 @@ export function DailyScreen() {
             initialContent={existing.content ?? { type: 'doc', content: [{ type: 'paragraph' }] }}
             onOpenWikiLink={(linkTitle) => {
               const target = notes.find((note) => note.title === linkTitle);
-              if (target) router.push(`/notes/${target.id}`);
+              if (target) router.push(noteHref(target.id));
             }}
           />
         </div>

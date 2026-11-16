@@ -10,6 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { NoteCard } from './note-card';
 import { useNoteActions } from './use-note-actions';
 import { useRouter } from 'next/navigation';
+import { noteHref } from '@/lib/paths';
 
 type Props = {
   notes: LocalNote[];
@@ -71,7 +72,7 @@ export function NotesList({
               setCreating(true);
               const id = await createNote({ folderId: createFolderId });
               setCreating(false);
-              if (id) router.push(`/notes/${id}`);
+              if (id) router.push(noteHref(id));
             }}
             className="gap-1.5"
           >

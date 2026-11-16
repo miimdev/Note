@@ -1,0 +1,91 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# One deployment at a time; a newer push cancels the queued run but never an
+# in-flight deploy (cancelling mid-deploy can leave Pages in a broken state).
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    name: Build static site
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Build static export
+        # Every NEXT_PUBLIC_* value is inlined into the browser bundle; the anon
+        # key is designed to be public (RLS enforces access). No service-role key
+        # is ever passed here: scripts/post-export.mjs fails the build if one is
+        # found in the artifact.
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_STATIC_EXPORT: 'true'
+          NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
+          # The assistant needs a server route; it stays off on Pages.
+          NEXT_PUBLIC_AI_ENABLED: 'false'
+        run: npm run build:static
+
+      - name: Verify artifact
+        run: |
+          set -e
+          test -f out/.nojekyll || { echo "missing .nojekyll"; exit 1; }
+          test -f out/404.html || { echo "missing 404.html"; exit 1; }
+          test -f out/index.html || { echo "missing index.html"; exit 1; }
+          base="/${{ github.event.repository.name }}"
+          grep -q "$base/_next/" out/index.html || { echo "assets not under $base"; exit 1; }
+          if [ -n "${{ vars.NEXT_PUBLIC_SUPABASE_URL }}" ]; then
+            grep -q "${{ vars.NEXT_PUBLIC_SUPABASE_URL }}" out/index.html \
+              || echo "::warning::Supabase URL not found in the export — check repository variables"
+          else
+            echo "::error::NEXT_PUBLIC_SUPABASE_URL repository variable is not set"
+            exit 1
+          fi
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

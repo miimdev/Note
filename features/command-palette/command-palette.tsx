@@ -26,6 +26,7 @@ import { matchesQuery } from '@/lib/search-query';
 import { useNoteActions } from '@/features/notes/use-note-actions';
 import { cn } from '@/lib/utils';
 import { toPersianDigits } from '@/lib/jalali';
+import { noteHref } from '@/lib/paths';
 
 type Command = {
   id: string;
@@ -67,7 +68,7 @@ export function CommandPalette() {
         group: 'یادداشت',
         run: async () => {
           const id = await createNote({});
-          if (id) router.push(`/notes/${id}`);
+          if (id) router.push(noteHref(id));
         },
       },
       {
@@ -181,7 +182,7 @@ export function CommandPalette() {
             hint: note.content_text.replace(/\[\[[^\]]*\]\]/g, '').slice(0, 40),
             icon: FileText,
             group: 'جستجو',
-            run: () => router.push(`/notes/${note.id}`),
+            run: () => router.push(noteHref(note.id)),
           }))
       : notes
           .filter((note) => !note.deleted_at)
@@ -192,7 +193,7 @@ export function CommandPalette() {
             hint: 'یادداشت اخیر',
             icon: FileText,
             group: 'یادداشت',
-            run: () => router.push(`/notes/${note.id}`),
+            run: () => router.push(noteHref(note.id)),
           }));
 
     return [...matchedCommands, ...matchedNotes];
