@@ -16,6 +16,7 @@
 - [اجرای migrationها](#اجرای-migrationها)
 - [تست و کیفیت کد](#تست-و-کیفیت-کد)
 - [دیپلوی روی Vercel](#دیپلوی-روی-vercel)
+- [دیپلوی استاتیک روی GitHub Pages](#دیپلوی-استاتیک-روی-github-pages)
 - [کارهای انجام‌شده / باقی‌مانده](#کارهای-انجامشده--باقیمانده)
 - [امنیت](#امنیت)
 
@@ -253,7 +254,7 @@ RLS (کاربر دیگر صفر ردیف می‌بیند)، `anon` بدون gran
 npm run typecheck    # TypeScript strict
 npm run lint         # ESLint (next/core-web-vitals + prettier)
 npm run format       # Prettier
-npm test             # Vitest — ۱۲۱ تست واحد
+npm test             # Vitest — ۱۲۶ تست واحد
 npm run test:e2e     # Playwright (نیازمند نصب مرورگر)
 ```
 
@@ -275,6 +276,46 @@ CI: `.github/workflows/ci.yml` → typecheck، lint، prettier check، تست، 
 
 ---
 
+## دیپلوی استاتیک روی GitHub Pages
+
+GitHub Pages فقط فایل سرو می‌کند، پس همان کد با `output: 'export'` هم بیلد می‌شود.
+دو اسکریپت این کار را ممکن می‌کنند:
+
+- `scripts/prepare-server-build.mjs` — کد فقط-سروری (middleware، route handlerها،
+  callback احراز هویت، صفحه‌های SSR اشتراک/چاپ، مسیرهای `[id]`) در پوشه‌ی `server/`
+  نگهداری می‌شود؛ `npm run dev` و `npm run build` آن را به `app/` برمی‌گردانند و
+  `build:static` قبل از بیلد پاکش می‌کند.
+- `scripts/post-export.mjs` — `.nojekyll` و `404.html` را می‌سازد و اگر کلید
+  service role داخل خروجی باشد بیلد را متوقف می‌کند.
+
+```bash
+NEXT_PUBLIC_STATIC_EXPORT=true NEXT_PUBLIC_BASE_PATH=/Note npm run build:static
+```
+
+### تفاوت‌ها با نسخه‌ی سروری
+
+| قابلیت                               | روی Pages                                                                                                  |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| مسیرهای داینامیک                     | `/notes?id=…`، `/folders?id=…`، `/tags?id=…`، `/s?id=…`، `/print?id=…` (با `lib/paths.ts` در حالت استاتیک) |
+| گارد ورود                            | `AuthGate` کلاینت‌ساید به‌جای middleware                                                                   |
+| callback ایمیل/OAuth                 | صفحه‌ی `/callback` که کد را در مرورگر با `exchangeCodeForSession` عوض می‌کند                               |
+| صفحه‌ی اشتراک عمومی و چاپ            | نسخه‌ی کلاینت با anon key و RLS/RPC                                                                        |
+| دستیار AI                            | **غیرفعال** (به `/api/ai` و کلید OpenRouter نیاز دارد)                                                     |
+| cron پاکسازی سطل زباله و انقضای لینک | **کار نمی‌کند** (نیاز به service role)                                                                     |
+| خروجی zip سمت سرور                   | کاربر همان خروجی zip کلاینت را دارد (`features/export/zip-export.ts`)                                      |
+
+### راه‌اندازی
+
+1. Settings → Pages → Source: **GitHub Actions**.
+2. Settings → Secrets and variables → Actions → **Variables**: `NEXT_PUBLIC_SUPABASE_URL`
+   و `NEXT_PUBLIC_SUPABASE_ANON_KEY` (کلید anon عمومی است؛ RLS دسترسی را کنترل می‌کند).
+   `NEXT_PUBLIC_SITE_URL` هم می‌تواند `https://<user>.github.io/<repo>/` باشد.
+3. در Supabase → Authentication → URL Configuration، آدرس
+   `https://<user>.github.io/<repo>/callback` را به Redirect URLs اضافه کنید.
+4. هر push به `main` (یا اجرای دستی) workflow `deploy.yml` را اجرا می‌کند.
+
+---
+
 ## کارهای انجام‌شده / باقی‌مانده
 
 **انجام‌شده**
@@ -292,7 +333,7 @@ CI: `.github/workflows/ci.yml` → typecheck، lint، prettier check، تست، 
 - [x] اشتراک عمومی با token/انقضا، خروجی Markdown/HTML/PDF/zip، ورود Markdown
 - [x] PWA (manifest + service worker + صفحه آفلاین) + فونت self-hosted
 - [x] دستیار AI با OpenRouter پشت feature flag و rate limit
-- [x] تست واحد (۱۲۱)، E2E، CI، ESLint/Prettier، README و مستندات
+- [x] تست واحد (۱۲۶)، E2E، CI، ESLint/Prettier، README و مستندات
 
 **باقی‌مانده / پیشنهاد بهبود**
 
