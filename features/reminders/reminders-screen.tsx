@@ -11,6 +11,7 @@ import { useSync } from '@/features/sync/sync-provider';
 import { Button } from '@/components/ui/button';
 import { formatJalaliDateTime, relativeTime } from '@/lib/jalali';
 import { requestNotificationPermission } from './notifications';
+import { getDb } from '@/lib/db/local-db';
 
 export function RemindersScreen() {
   const { userId } = useSync();
@@ -21,13 +22,26 @@ export function RemindersScreen() {
   const load = React.useCallback(async () => {
     if (!userId) return;
     setLoading(true);
+
+    // The sync engine mirrors reminders into IndexedDB, so show those first:
+    // the list is usable immediately and still correct while offline.
+    const local = await getDb()
+      .reminders.where('user_id')
+      .equals(userId)
+      .toArray()
+      .catch(() => [] as Reminder[]);
+    const byDate = (items: Reminder[]) =>
+      [...items].sort((a, b) => a.remind_at.localeCompare(b.remind_at));
+    if (local.length > 0) setReminders(byDate(local));
+
     const client = getSupabaseBrowserClient();
-    const { data } = await client
+    const { data, error } = await client
       .from('reminders')
       .select('*')
       .eq('user_id', userId)
       .order('remind_at');
-    setReminders((data ?? []) as Reminder[]);
+
+    if (!error) setReminders(byDate((data ?? []) as Reminder[]));
     setLoading(false);
   }, [userId]);
 
@@ -36,18 +50,22 @@ export function RemindersScreen() {
   }, [load]);
 
   const complete = async (reminder: Reminder) => {
+    const markDone = () =>
+      setReminders((current) =>
+        current.map((item) => (item.id === reminder.id ? { ...item, is_done: true } : item)),
+      );
+
+    // Update the local copy first so the row stays ticked offline too.
+    await getDb().reminders.update(reminder.id, { is_done: true });
+
     const client = getSupabaseBrowserClient();
     const { error } = await client
       .from('reminders')
       .update({ is_done: true })
       .eq('id', reminder.id);
-    if (error) {
-      toast.error('به‌روزرسانی ناموفق بود');
-      return;
-    }
-    setReminders(
-      reminders.map((item) => (item.id === reminder.id ? { ...item, is_done: true } : item)),
-    );
+
+    markDone();
+    if (error) toast.error('آفلاین ثبت شد؛ پس از اتصال با سرور همگام شود');
   };
 
   const noteTitle = (noteId: string) =>
