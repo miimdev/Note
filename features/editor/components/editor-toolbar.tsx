@@ -1,6 +1,6 @@
 'use client';
 
-import type { Editor } from '@tiptap/react';
+import { useEditorState, type Editor } from '@tiptap/react';
 import {
   Bold,
   CheckSquare,
@@ -28,7 +28,36 @@ type ToolbarAction = {
   onClick: () => void;
 };
 
+/**
+ * The toolbar is a sibling of the editor content, so it does not re-render when
+ * the document changes on its own. `useEditorState` subscribes it to the editor
+ * so the active/disabled flags always reflect the cursor position.
+ */
+function useToolbarState(editor: Editor) {
+  return useEditorState({
+    editor,
+    selector: ({ editor: instance }) => ({
+      bold: instance.isActive('bold'),
+      italic: instance.isActive('italic'),
+      underline: instance.isActive('underline'),
+      strike: instance.isActive('strike'),
+      h1: instance.isActive('heading', { level: 1 }),
+      h2: instance.isActive('heading', { level: 2 }),
+      h3: instance.isActive('heading', { level: 3 }),
+      bulletList: instance.isActive('bulletList'),
+      orderedList: instance.isActive('orderedList'),
+      taskList: instance.isActive('taskList'),
+      blockquote: instance.isActive('blockquote'),
+      codeBlock: instance.isActive('codeBlock'),
+      table: instance.isActive('table'),
+      canUndo: instance.can().undo(),
+      canRedo: instance.can().redo(),
+    }),
+  });
+}
+
 export function EditorToolbar({ editor }: { editor: Editor }) {
+  const state = useToolbarState(editor);
   const chain = () => editor.chain().focus();
 
   const groups: ToolbarAction[][] = [
@@ -36,13 +65,13 @@ export function EditorToolbar({ editor }: { editor: Editor }) {
       {
         label: 'واگرد',
         icon: Undo2,
-        disabled: !editor.can().undo(),
+        disabled: !state?.canUndo,
         onClick: () => chain().undo().run(),
       },
       {
         label: 'ازنو',
         icon: Redo2,
-        disabled: !editor.can().redo(),
+        disabled: !state?.canRedo,
         onClick: () => chain().redo().run(),
       },
     ],
@@ -50,19 +79,19 @@ export function EditorToolbar({ editor }: { editor: Editor }) {
       {
         label: 'تیتر ۱',
         icon: Heading1,
-        active: editor.isActive('heading', { level: 1 }),
+        active: state?.h1,
         onClick: () => chain().toggleHeading({ level: 1 }).run(),
       },
       {
         label: 'تیتر ۲',
         icon: Heading2,
-        active: editor.isActive('heading', { level: 2 }),
+        active: state?.h2,
         onClick: () => chain().toggleHeading({ level: 2 }).run(),
       },
       {
         label: 'تیتر ۳',
         icon: Heading3,
-        active: editor.isActive('heading', { level: 3 }),
+        active: state?.h3,
         onClick: () => chain().toggleHeading({ level: 3 }).run(),
       },
     ],
@@ -70,25 +99,25 @@ export function EditorToolbar({ editor }: { editor: Editor }) {
       {
         label: 'ضخیم',
         icon: Bold,
-        active: editor.isActive('bold'),
+        active: state?.bold,
         onClick: () => chain().toggleBold().run(),
       },
       {
         label: 'کج',
         icon: Italic,
-        active: editor.isActive('italic'),
+        active: state?.italic,
         onClick: () => chain().toggleItalic().run(),
       },
       {
         label: 'زیرخط',
         icon: UnderlineIcon,
-        active: editor.isActive('underline'),
+        active: state?.underline,
         onClick: () => chain().toggleUnderline().run(),
       },
       {
         label: 'خط‌خورده',
         icon: Strikethrough,
-        active: editor.isActive('strike'),
+        active: state?.strike,
         onClick: () => chain().toggleStrike().run(),
       },
     ],
@@ -96,19 +125,19 @@ export function EditorToolbar({ editor }: { editor: Editor }) {
       {
         label: 'لیست',
         icon: List,
-        active: editor.isActive('bulletList'),
+        active: state?.bulletList,
         onClick: () => chain().toggleBulletList().run(),
       },
       {
         label: 'لیست شماره‌دار',
         icon: ListOrdered,
-        active: editor.isActive('orderedList'),
+        active: state?.orderedList,
         onClick: () => chain().toggleOrderedList().run(),
       },
       {
         label: 'چک‌لیست',
         icon: CheckSquare,
-        active: editor.isActive('taskList'),
+        active: state?.taskList,
         onClick: () => chain().toggleTaskList().run(),
       },
     ],
@@ -116,19 +145,19 @@ export function EditorToolbar({ editor }: { editor: Editor }) {
       {
         label: 'نقل‌قول',
         icon: Quote,
-        active: editor.isActive('blockquote'),
+        active: state?.blockquote,
         onClick: () => chain().toggleBlockquote().run(),
       },
       {
         label: 'بلوک کد',
         icon: Code2,
-        active: editor.isActive('codeBlock'),
+        active: state?.codeBlock,
         onClick: () => chain().toggleCodeBlock().run(),
       },
       {
         label: 'جدول',
         icon: TableIcon,
-        active: editor.isActive('table'),
+        active: state?.table,
         onClick: () => chain().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run(),
       },
     ],
