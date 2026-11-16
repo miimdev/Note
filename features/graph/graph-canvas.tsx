@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useTheme } from 'next-themes';
 
 export type GraphNode = {
   id: string;
@@ -47,6 +48,10 @@ export function GraphCanvas({ nodes: inputNodes, edges, onSelect, selectedId }: 
   const frameRef = React.useRef<number>(0);
   const alphaRef = React.useRef(1);
   const nodesRef = React.useRef<GraphNode[]>([]);
+  // Canvas is drawn by hand, so it never inherits CSS variables: the palette has
+  // to be re-read whenever the theme flips, otherwise a dark-mode graph keeps
+  // the light background painted on it.
+  const { resolvedTheme } = useTheme();
 
   // Seed positions on a circle, keeping stable ids.
   React.useEffect(() => {
@@ -102,7 +107,7 @@ export function GraphCanvas({ nodes: inputNodes, edges, onSelect, selectedId }: 
     const border = `hsl(${css.getPropertyValue('--border').trim() || '240 10% 90%'})`;
     const background = `hsl(${css.getPropertyValue('--background').trim() || '0 0% 100%'})`;
 
-    const edgeIndex = edges.map((edge) => ({ edge, source: 0, target: 0 })).map((item) => item);
+    const edgeIndex = edges.map((edge) => ({ edge }));
 
     const tick = () => {
       const width = canvas.clientWidth;
@@ -224,7 +229,7 @@ export function GraphCanvas({ nodes: inputNodes, edges, onSelect, selectedId }: 
       cancelAnimationFrame(frameRef.current);
       window.removeEventListener('resize', resize);
     };
-  }, [edges, hovered?.id, selectedId, showLabels, zoom]);
+  }, [edges, hovered?.id, resolvedTheme, selectedId, showLabels, zoom]);
 
   const hitTest = (clientX: number, clientY: number) => {
     const canvas = canvasRef.current;
