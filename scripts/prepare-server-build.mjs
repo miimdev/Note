@@ -21,8 +21,6 @@ const clean = process.argv.includes('--clean');
 /** Every entry is relative to the repo root. */
 const SERVER_FILES = [
   ['server/middleware.ts', 'middleware.ts'],
-  // `static/` inside this directory holds the *page* version, see below.
-  ['server/app/callback/route.ts', 'app/(auth)/callback/route.ts'],
   ['server/app/api/ai', 'app/api/ai'],
   ['server/app/api/cron/purge', 'app/api/cron/purge'],
   ['server/app/api/export/zip', 'app/api/export/zip'],
@@ -64,21 +62,22 @@ for (const [from, to] of SERVER_FILES) {
 }
 
 /**
- * `/callback` is the one URL that needs a different *kind* of file per build:
- * a route handler when there is a server, and a page in a static export (Next
- * forbids both in the same segment). The page is the tracked default, so a
- * server build swaps it out and `--clean` puts it back.
+ * `/callback` is the one URL that needs a different *kind* of file per build: a
+ * page in a static export (no route handlers exist there) and a route handler
+ * when there is a server — and Next.js forbids both in the same segment. Both
+ * variants live in `server/`, so the directory is always generated and the
+ * working tree never shows a file the current mode does not use.
  */
-const CALLBACK_HANDLER = 'app/(auth)/callback/route.ts';
-const CALLBACK_PAGE = 'app/(auth)/callback/page.tsx';
-const CALLBACK_PAGE_SOURCE = 'server/app/callback/static/page.tsx';
+const CALLBACK_DIR = 'app/(auth)/callback';
+const CALLBACK_PAGE = join(root, CALLBACK_DIR, 'page.tsx');
+const CALLBACK_HANDLER = join(root, CALLBACK_DIR, 'route.ts');
 
-if (clean) {
-  await rm(join(root, CALLBACK_HANDLER), { force: true });
-  await mkdir(dirname(join(root, CALLBACK_PAGE)), { recursive: true });
-  await cp(join(root, CALLBACK_PAGE_SOURCE), join(root, CALLBACK_PAGE));
-} else {
-  await rm(join(root, CALLBACK_PAGE), { force: true });
-}
+await rm(CALLBACK_PAGE, { force: true });
+await rm(CALLBACK_HANDLER, { force: true });
+await mkdir(join(root, CALLBACK_DIR), { recursive: true });
+await cp(
+  join(root, clean ? 'server/app/callback/static/page.tsx' : 'server/app/callback/route.ts'),
+  clean ? CALLBACK_PAGE : CALLBACK_HANDLER,
+);
 
 console.log(clean ? 'server files removed' : 'server files restored');
