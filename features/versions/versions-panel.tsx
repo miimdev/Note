@@ -13,12 +13,23 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { formatJalaliDateTime, relativeTime } from '@/lib/jalali';
+import { formatJalaliDateTime, relativeTime, toPersianDigits } from '@/lib/jalali';
 import { docToText } from '@/lib/editor/content';
+import { countChanges, diffLines, type DiffLine } from '@/lib/diff';
 import { useNoteActions } from '@/features/notes/use-note-actions';
 import { cn } from '@/lib/utils';
 
 type Props = { noteId: string };
+
+/** The snapshot right before `selected` (versions are newest-first). */
+function previousVersion(
+  versions: NoteVersion[],
+  selected: NoteVersion | null,
+): NoteVersion | null {
+  if (!selected) return null;
+  const index = versions.findIndex((version) => version.id === selected.id);
+  return versions[index + 1] ?? null;
+}
 
 /** Version history with a side-by-side text diff and one-click restore. */
 export function VersionsPanel({ noteId }: Props) {
@@ -58,6 +69,17 @@ export function VersionsPanel({ noteId }: Props) {
     }
   };
 
+  const diff = React.useMemo<DiffLine[] | null>(() => {
+    if (!selected || !comparing) return null;
+    // `comparing` is the older snapshot: show what the newer one changed.
+    return diffLines(docToText(comparing.content), docToText(selected.content));
+  }, [selected, comparing]);
+
+  const diffStats = React.useMemo(
+    () => (diff ? countChanges(diff) : { added: 0, removed: 0 }),
+    [diff],
+  );
+
   if (loading) {
     return (
       <p className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -92,7 +114,10 @@ export function VersionsPanel({ noteId }: Props) {
             <li key={version.id}>
               <button
                 type="button"
-                onClick={() => setSelected(version)}
+                onClick={() => {
+                  setSelected(version);
+                  setComparing(null);
+                }}
                 className="flex w-full items-center justify-between gap-2 rounded-md px-1.5 py-1 text-start text-xs hover:bg-accent"
               >
                 <span className="truncate">{version.title || 'بدون عنوان'}</span>
@@ -114,37 +139,61 @@ export function VersionsPanel({ noteId }: Props) {
             </DialogDescription>
           </DialogHeader>
 
-          <div className={cn('grid gap-3', comparing && 'sm:grid-cols-2')}>
+          {comparing && diff ? (
+            <div className="rounded-lg border">
+              <div className="flex items-center justify-between gap-2 border-b bg-muted/40 px-3 py-1.5 text-[11px] text-muted-foreground">
+                <span>
+                  v{comparing.version} ← v{selected?.version}
+                </span>
+                <span className="flex items-center gap-2">
+                  <span className="text-emerald-600 dark:text-emerald-400">
+                    +{toPersianDigits(diffStats.added)}
+                  </span>
+                  <span className="text-rose-600 dark:text-rose-400">
+                    −{toPersianDigits(diffStats.removed)}
+                  </span>
+                </span>
+              </div>
+              <ol className="max-h-72 overflow-y-auto p-2 font-mono text-[11px] leading-5">
+                {diff.map((line, index) => (
+                  <li
+                    key={`${index}-${line.op}`}
+                    className={cn(
+                      'whitespace-pre-wrap rounded px-1.5',
+                      line.op === 'added' &&
+                        'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300',
+                      line.op === 'removed' &&
+                        'bg-rose-500/10 text-rose-700 line-through decoration-rose-400/60 dark:text-rose-300',
+                      line.op === 'equal' && 'text-muted-foreground',
+                    )}
+                  >
+                    <span aria-hidden className="me-1.5 select-none opacity-60">
+                      {line.op === 'added' ? '+' : line.op === 'removed' ? '−' : ' '}
+                    </span>
+                    {line.text || ' '}
+                  </li>
+                ))}
+              </ol>
+            </div>
+          ) : (
             <div className="rounded-lg border p-3">
               <p className="mb-2 text-xs font-medium">{selected?.title || 'بدون عنوان'}</p>
               <pre className="max-h-64 overflow-y-auto whitespace-pre-wrap font-sans text-xs leading-5">
                 {selected ? docToText(selected.content) : ''}
               </pre>
             </div>
-            {comparing && (
-              <div className="rounded-lg border bg-muted/30 p-3">
-                <p className="mb-2 text-xs font-medium">
-                  مقایسه با v{comparing.version} — {comparing.title}
-                </p>
-                <pre className="max-h-64 overflow-y-auto whitespace-pre-wrap font-sans text-xs leading-5">
-                  {docToText(comparing.content)}
-                </pre>
-              </div>
-            )}
-          </div>
+          )}
 
           <div className="flex flex-wrap gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() =>
-                setComparing(
-                  comparing ? null : (versions.find((v) => v.id !== selected?.id) ?? null),
-                )
-              }
-            >
-              {comparing ? 'بستن مقایسه' : 'مقایسه با نسخه قبلی'}
-            </Button>
+            {previousVersion(versions, selected) && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setComparing(comparing ? null : previousVersion(versions, selected))}
+              >
+                {comparing ? 'بستن مقایسه' : 'مقایسه با نسخه قبلی'}
+              </Button>
+            )}
             <Button
               size="sm"
               className="gap-1.5"
