@@ -21,7 +21,8 @@ const clean = process.argv.includes('--clean');
 /** Every entry is relative to the repo root. */
 const SERVER_FILES = [
   ['server/middleware.ts', 'middleware.ts'],
-  ['server/app/callback', 'app/(auth)/callback'],
+  // `static/` inside this directory holds the *page* version, see below.
+  ['server/app/callback/route.ts', 'app/(auth)/callback/route.ts'],
   ['server/app/api/ai', 'app/api/ai'],
   ['server/app/api/cron/purge', 'app/api/cron/purge'],
   ['server/app/api/export/zip', 'app/api/export/zip'],
@@ -60,6 +61,24 @@ for (const [from, to] of SERVER_FILES) {
 
   await mkdir(dirname(target), { recursive: true });
   await cp(source, target, { recursive: true });
+}
+
+/**
+ * `/callback` is the one URL that needs a different *kind* of file per build:
+ * a route handler when there is a server, and a page in a static export (Next
+ * forbids both in the same segment). The page is the tracked default, so a
+ * server build swaps it out and `--clean` puts it back.
+ */
+const CALLBACK_HANDLER = 'app/(auth)/callback/route.ts';
+const CALLBACK_PAGE = 'app/(auth)/callback/page.tsx';
+const CALLBACK_PAGE_SOURCE = 'server/app/callback/static/page.tsx';
+
+if (clean) {
+  await rm(join(root, CALLBACK_HANDLER), { force: true });
+  await mkdir(dirname(join(root, CALLBACK_PAGE)), { recursive: true });
+  await cp(join(root, CALLBACK_PAGE_SOURCE), join(root, CALLBACK_PAGE));
+} else {
+  await rm(join(root, CALLBACK_PAGE), { force: true });
 }
 
 console.log(clean ? 'server files removed' : 'server files restored');

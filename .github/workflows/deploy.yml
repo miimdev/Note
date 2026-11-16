@@ -88,6 +88,8 @@ jobs:
           test -f out/.nojekyll || { echo "::error::missing .nojekyll"; exit 1; }
           test -f out/404.html || { echo "::error::missing 404.html"; exit 1; }
           test -f out/index.html || { echo "::error::missing index.html"; exit 1; }
+          # Supabase sends email/OAuth links here; without it sign-in 404s.
+          test -f out/callback/index.html || { echo "::error::missing callback/index.html"; exit 1; }
 
           grep -q "$BASE/_next/" out/index.html || { echo "::error::assets are not under $BASE"; exit 1; }
 
