@@ -23,7 +23,9 @@ self.addEventListener('activate', (event) => {
     caches
       .keys()
       .then((keys) =>
-        Promise.all(keys.filter((key) => !key.startsWith(VERSION)).map((key) => caches.delete(key))),
+        Promise.all(
+          keys.filter((key) => !key.startsWith(VERSION)).map((key) => caches.delete(key)),
+        ),
       )
       .then(() => self.clients.claim()),
   );
@@ -43,7 +45,10 @@ self.addEventListener('fetch', (event) => {
       fetch(request)
         .then((response) => {
           const copy = response.clone();
-          caches.open(SHELL_CACHE).then((cache) => cache.put(request, copy)).catch(() => undefined);
+          caches
+            .open(SHELL_CACHE)
+            .then((cache) => cache.put(request, copy))
+            .catch(() => undefined);
           return response;
         })
         .catch(async () => {
@@ -51,7 +56,10 @@ self.addEventListener('fetch', (event) => {
           if (cached) return cached;
           const offline = await caches.match(`${BASE}/offline`);
           if (offline) return offline;
-          return new Response('آفلاین هستید.', { status: 503, headers: { 'content-type': 'text/plain; charset=utf-8' } });
+          return new Response('آفلاین هستید.', {
+            status: 503,
+            headers: { 'content-type': 'text/plain; charset=utf-8' },
+          });
         }),
     );
     return;
@@ -64,7 +72,10 @@ self.addEventListener('fetch', (event) => {
         .then((response) => {
           if (response.ok) {
             const copy = response.clone();
-            caches.open(ASSET_CACHE).then((cache) => cache.put(request, copy)).catch(() => undefined);
+            caches
+              .open(ASSET_CACHE)
+              .then((cache) => cache.put(request, copy))
+              .catch(() => undefined);
           }
           return response;
         })

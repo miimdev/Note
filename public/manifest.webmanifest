@@ -10,10 +10,7 @@
   "theme_color": "#5b4bdb",
   "lang": "fa",
   "dir": "rtl",
-  "categories": [
-    "productivity",
-    "utilities"
-  ],
+  "categories": ["productivity", "utilities"],
   "icons": [
     {
       "src": "./icons/icon.svg",
