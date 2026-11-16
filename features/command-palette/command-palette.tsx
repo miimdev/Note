@@ -22,6 +22,7 @@ import {
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { useUiStore } from '@/store/ui-store';
 import { useNotesStore } from '@/store/notes-store';
+import { matchesQuery } from '@/lib/search-query';
 import { useNoteActions } from '@/features/notes/use-note-actions';
 import { cn } from '@/lib/utils';
 import { toPersianDigits } from '@/lib/jalali';
@@ -168,12 +169,16 @@ export function CommandPalette() {
 
     const matchedNotes = q
       ? notes
-          .filter((note) => !note.deleted_at && note.title.toLowerCase().includes(q))
+          .filter(
+            (note) =>
+              !note.deleted_at &&
+              matchesQuery({ title: note.title, text: note.content_text }, query),
+          )
           .slice(0, 6)
           .map<Command>((note) => ({
             id: `note-${note.id}`,
             label: note.title || 'بدون عنوان',
-            hint: note.content_text.slice(0, 40),
+            hint: note.content_text.replace(/\[\[[^\]]*\]\]/g, '').slice(0, 40),
             icon: FileText,
             group: 'جستجو',
             run: () => router.push(`/notes/${note.id}`),
