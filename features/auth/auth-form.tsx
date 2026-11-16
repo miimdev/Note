@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 import { getSupabaseBrowserClient, isSupabaseConfigured } from '@/lib/supabase/client';
-import { IS_STATIC_EXPORT } from '@/lib/paths';
+import { IS_STATIC_EXPORT, appUrl, stripBasePath } from '@/lib/paths';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -48,17 +48,22 @@ const COPY: Record<Mode, { title: string; description: string; submit: string }>
  *
  * A page is always the better source of truth than an env var: on GitHub Pages
  * the app lives under `/<repo>/`, and `NEXT_PUBLIC_SITE_URL` may still point at
- * the apex domain. So the current origin is used everywhere.
+ * the apex domain. So the current origin *plus base path* is used instead.
+ * Callers strip a trailing slash before appending `/callback`.
  */
 function authBaseUrl(): string {
-  if (IS_STATIC_EXPORT) return window.location.origin;
+  // Must include the deployment base path: GitHub Pages serves the app from
+  // /<repo>/, so `${origin}/callback` would point outside the app.
+  if (IS_STATIC_EXPORT) return appUrl('/');
   return process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
 }
 
 export function AuthForm({ mode }: { mode: Mode }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const nextPath = searchParams.get('next') || '/notes';
+  // `next` can come from the URL bar (see AuthGate), i.e. already prefixed with
+  // the deployment base path, but router.push adds basePath itself.
+  const nextPath = stripBasePath(searchParams.get('next') || '/notes');
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
@@ -88,7 +93,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
     const displayName = String(formData.get('displayName') ?? '');
     const confirmPassword = String(formData.get('confirmPassword') ?? '');
     const client = getSupabaseBrowserClient();
-    const siteUrl = authBaseUrl();
+    const siteUrl = authBaseUrl().replace(/\/$/, '');
 
     setLoading(true);
     try {
@@ -161,7 +166,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
     setError(null);
     try {
       const client = getSupabaseBrowserClient();
-      const siteUrl = authBaseUrl();
+      const siteUrl = authBaseUrl().replace(/\/$/, '');
       const { error: oauthError } = await client.auth.signInWithOAuth({
         provider: 'google',
         options: { redirectTo: `${siteUrl}/callback?next=${encodeURIComponent(nextPath)}` },

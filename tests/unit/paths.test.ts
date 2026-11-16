@@ -48,4 +48,24 @@ describe('path helpers', () => {
     expect(withBasePath('/Note/sw.js')).toBe('/Note/sw.js');
     expect(withBasePath('https://x.dev/a')).toBe('https://x.dev/a');
   });
+
+  it('strips the base path read off window.location before router.push', async () => {
+    const { stripBasePath } = await loadPaths({ base: '/Note' });
+    // The exact regression seen on Pages: /Note/notes/ reached router.push and
+    // became /Note/Note/notes/ (404) right after signing in.
+    expect(stripBasePath('/Note/notes/')).toBe('/notes/');
+    expect(stripBasePath('/Note/notes/?id=abc')).toBe('/notes/?id=abc');
+    expect(stripBasePath('/Note')).toBe('/');
+    expect(stripBasePath('/Note/')).toBe('/');
+    // Paths without the prefix (or a lookalike) are untouched.
+    expect(stripBasePath('/notes/')).toBe('/notes/');
+    expect(stripBasePath('/Notebook/x')).toBe('/Notebook/x');
+    expect(stripBasePath('https://x.dev/Note/a')).toBe('https://x.dev/Note/a');
+  });
+
+  it('leaves paths alone when there is no base path', async () => {
+    const { stripBasePath } = await loadPaths({});
+    expect(stripBasePath('/notes/')).toBe('/notes/');
+    expect(stripBasePath('/Note/notes/')).toBe('/Note/notes/');
+  });
 });
