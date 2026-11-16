@@ -70,11 +70,18 @@ jobs:
           SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           BASE: /${{ github.event.repository.name }}
+          # Diagnostics: names only, never values. `vars` is a plain object so it
+          # can be printed; the Secrets tab is not listable by design, so only the
+          # presence of the two names we care about is reported.
+          VISIBLE_VARS: ${{ toJSON(vars) }}
+          SECRET_URL_PRESENT: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL != '' }}
+          SECRET_KEY_PRESENT: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY != '' }}
         run: |
           set -e
 
           if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
-            echo "::error title=Supabase values are missing::Nothing named NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY was visible to this job. Add BOTH under Settings -> Secrets and variables -> Actions -> Variables (repository scope is simplest). If you stored them under Settings -> Environments -> github-pages instead, they must be variables or secrets of that environment. Then re-run this workflow."
+            var_names=$(printf '%s' "${VISIBLE_VARS}" | jq -r 'keys | join(", ")' 2>/dev/null || echo "unreadable")
+            echo "::error title=Supabase values are missing::No usable value reached this job. Variable names visible to it: ${var_names:-none}. Secrets with these exact names present: url=$SECRET_URL_PRESENT key=$SECRET_KEY_PRESENT. Add both under Settings -> Secrets and variables -> Actions -> Variables (repository scope). Names must be exactly NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY."
             exit 1
           fi
 
