@@ -1,6 +1,6 @@
 'use client';
 
-import type { Editor } from '@tiptap/react';
+import { useEditorState, type Editor } from '@tiptap/react';
 import {
   Bold,
   Code,
@@ -14,6 +14,20 @@ import { cn } from '@/lib/utils';
 
 export function EditorBubbleMenu({ editor }: { editor: Editor }) {
   const chain = () => editor.chain().focus();
+
+  // Subscribe so the pressed state follows the selection inside the bubble.
+  const state = useEditorState({
+    editor,
+    selector: ({ editor: instance }) => ({
+      bold: instance.isActive('bold'),
+      italic: instance.isActive('italic'),
+      underline: instance.isActive('underline'),
+      strike: instance.isActive('strike'),
+      highlight: instance.isActive('highlight'),
+      code: instance.isActive('code'),
+      link: instance.isActive('link'),
+    }),
+  });
 
   const setLink = () => {
     const previous = editor.getAttributes('link').href as string | undefined;
@@ -30,43 +44,43 @@ export function EditorBubbleMenu({ editor }: { editor: Editor }) {
     {
       label: 'ضخیم',
       icon: Bold,
-      active: editor.isActive('bold'),
+      active: state?.bold,
       onClick: () => chain().toggleBold().run(),
     },
     {
       label: 'کج',
       icon: Italic,
-      active: editor.isActive('italic'),
+      active: state?.italic,
       onClick: () => chain().toggleItalic().run(),
     },
     {
       label: 'زیرخط',
       icon: UnderlineIcon,
-      active: editor.isActive('underline'),
+      active: state?.underline,
       onClick: () => chain().toggleUnderline().run(),
     },
     {
       label: 'خط‌خورده',
       icon: Strikethrough,
-      active: editor.isActive('strike'),
+      active: state?.strike,
       onClick: () => chain().toggleStrike().run(),
     },
     {
       label: 'هایلایت',
       icon: Highlighter,
-      active: editor.isActive('highlight'),
+      active: state?.highlight,
       onClick: () => chain().toggleHighlight().run(),
     },
     {
       label: 'کد',
       icon: Code,
-      active: editor.isActive('code'),
+      active: state?.code,
       onClick: () => chain().toggleCode().run(),
     },
     {
       label: 'لینک',
       icon: Link2,
-      active: editor.isActive('link'),
+      active: state?.link,
       onClick: setLink,
     },
   ];
