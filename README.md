@@ -310,8 +310,9 @@ NEXT_PUBLIC_STATIC_EXPORT=true NEXT_PUBLIC_BASE_PATH=/Note npm run build:static
 2. Settings → Secrets and variables → Actions → **Variables**: `NEXT_PUBLIC_SUPABASE_URL`
    و `NEXT_PUBLIC_SUPABASE_ANON_KEY` (کلید anon عمومی است؛ RLS دسترسی را کنترل می‌کند).
    `NEXT_PUBLIC_SITE_URL` هم می‌تواند `https://<user>.github.io/<repo>/` باشد.
-   اگر مقدارها را در تب **Secrets** گذاشتید هم کار می‌کند؛ workflow هر دو جا را
-   می‌خواند. بدون این دو مقدار، مرحله‌ی «Verify artifact» عمداً بیلد را متوقف
+   مقدارها را در تب **Secrets** بگذارید هم کار می‌کند؛ workflow هر دو جا و همچنین
+   سطح Environment را می‌خواند. کلید باید anon یا `sb_publishable_…` باشد؛ اگر
+   اشتباهاً `service_role` بگذارید مرحله‌ی Verify بیلد را متوقف می‌کند. بدون این دو مقدار، مرحله‌ی «Verify artifact» عمداً بیلد را متوقف
    می‌کند تا سایت با بیلد ناقص منتشر نشود.
 3. در Supabase → Authentication → URL Configuration:
    - **Site URL**: `https://<user>.github.io/<repo>/`
