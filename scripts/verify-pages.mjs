@@ -17,6 +17,9 @@ if (!base) {
 const checks = [
   ['home page', '/', 200],
   ['login page', '/login/', 200],
+  ['signup page', '/signup/', 200],
+  // Supabase redirects email/OAuth links here; a missing page breaks sign-in.
+  ['auth callback', '/callback/', 200],
   ['offline page', '/offline/', 200],
   ['web manifest', '/manifest.webmanifest', 200],
   ['service worker', '/sw.js', 200],
@@ -41,8 +44,10 @@ try {
   const html = await (await fetch(`${base}/`)).text();
   const assets = [...html.matchAll(/(?:src|href)="([^"]*_next\/[^"]+)"/g)].map((m) => m[1]);
   const unique = [...new Set(assets)].slice(0, 6);
+  const origin = new URL(base).origin;
   for (const asset of unique) {
-    const url = asset.startsWith('http') ? asset : `${base}${asset}`;
+    // Assets are emitted as /<base>/_next/…, so the origin is what they lack.
+    const url = asset.startsWith('http') ? asset : `${origin}${asset}`;
     const status = (await fetch(url)).status;
     const ok = status === 200;
     console.log(`${ok ? 'ok  ' : 'FAIL'} asset ${asset}: ${status}`);
