@@ -8,16 +8,12 @@ import { useSync } from '@/features/sync/sync-provider';
 import { useNotesStore } from '@/store/notes-store';
 import type { NoteLink } from '@/types/database.types';
 import { cn } from '@/lib/utils';
+import { buildLocalLinks } from '@/lib/graph';
 
 type RelatedNote = { id: string; title: string; reason: string };
 
 type Props = { noteId: string };
 
-/**
- * Outgoing links (`[[title]]`) and backlinks (notes pointing here), plus
- * server-side "related notes" suggestions. All data is fetched through RLS
- * protected queries; nothing leaves the current user's workspace.
- */
 export function BacklinksPanel({ noteId }: Props) {
   const { userId } = useSync();
   const notes = useNotesStore((state) => state.notes);
@@ -46,11 +42,20 @@ export function BacklinksPanel({ noteId }: Props) {
       ]);
 
       if (!active) return;
-      setLinks((outgoing.data ?? []) as NoteLink[]);
-      setIncoming((backlinks.data ?? []) as NoteLink[]);
-      setRelated(
-        ((suggestions.data ?? []) as { id: string; title: string; reason: string }[]) ?? [],
-      );
+
+      if (outgoing.error || backlinks.error) {
+        // Offline: derive both directions from the cached note texts.
+        const local = buildLocalLinks(noteId, notes);
+        setLinks(local.links);
+        setIncoming(local.incoming);
+        setRelated([]);
+      } else {
+        setLinks((outgoing.data ?? []) as NoteLink[]);
+        setIncoming((backlinks.data ?? []) as NoteLink[]);
+        setRelated(
+          ((suggestions.data ?? []) as { id: string; title: string; reason: string }[]) ?? [],
+        );
+      }
       setLoading(false);
     }
 
@@ -58,7 +63,7 @@ export function BacklinksPanel({ noteId }: Props) {
     return () => {
       active = false;
     };
-  }, [noteId, userId]);
+  }, [noteId, notes, userId]);
 
   const reasonLabel: Record<string, string> = {
     link: 'لینک‌شده',

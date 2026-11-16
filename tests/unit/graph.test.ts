@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildLocalGraph } from '@/lib/graph';
+import { buildLocalGraph, buildLocalLinks } from '@/lib/graph';
 
 const note = (
   overrides: Partial<Parameters<typeof buildLocalGraph>[0][number]> & { id: string },
@@ -72,5 +72,58 @@ describe('buildLocalGraph', () => {
   it('fills tag counts from the passed map', () => {
     const { nodes } = buildLocalGraph([note({ id: 'a' })], new Map([['a', 3]]));
     expect(nodes[0]?.tag_count).toBe(3);
+  });
+});
+
+describe('buildLocalLinks', () => {
+  const notes = [
+    {
+      id: 'a',
+      title: 'آلفا',
+      content_text: 'ببین [[بتا]] و [[ناموجود]]',
+      is_favorite: false,
+      is_archived: false,
+      deleted_at: null,
+      folder_id: null,
+      updated_at: '2024-01-01T00:00:00Z',
+    },
+    {
+      id: 'b',
+      title: 'بتا',
+      content_text: 'برگشت به [[آلفا]]',
+      is_favorite: false,
+      is_archived: false,
+      deleted_at: null,
+      folder_id: null,
+      updated_at: '2024-01-01T00:00:00Z',
+    },
+  ];
+
+  it('resolves outgoing links and flags dangling ones', () => {
+    const { links } = buildLocalLinks('a', notes);
+    expect(links.map((link) => [link.target_title, link.target_note_id])).toEqual([
+      ['بتا', 'b'],
+      ['ناموجود', null],
+    ]);
+  });
+
+  it('finds backlinks pointing at the note', () => {
+    const { incoming } = buildLocalLinks('a', notes);
+    expect(incoming.map((link) => link.source_note_id)).toEqual(['b']);
+  });
+
+  it('ignores trashed notes when linking', () => {
+    const trashed = notes.map((note) =>
+      note.id === 'b' ? { ...note, deleted_at: '2024-02-01T00:00:00Z' } : note,
+    );
+    const { links, incoming } = buildLocalLinks('a', trashed);
+    expect(links[0]?.target_note_id).toBeNull();
+    expect(incoming).toEqual([]);
+  });
+
+  it('returns nothing for an unknown note', () => {
+    const { links, incoming } = buildLocalLinks('missing', notes);
+    expect(links).toEqual([]);
+    expect(incoming).toEqual([]);
   });
 });

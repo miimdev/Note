@@ -1,5 +1,6 @@
-import { buildTitleIndex } from './links';
+import { buildTitleIndex, parseWikiLinks } from './links';
 import { normalizeFa } from './search-query';
+import type { NoteLink, NoteContent } from '@/types/database.types';
 
 export type LocalGraphNode = {
   id: string;
@@ -65,4 +66,70 @@ export function buildLocalGraph(
   }
 
   return { nodes, edges };
+}
+
+/** Wraps plain text back into a minimal TipTap document for the link parser. */
+function textToDoc(text: string): NoteContent {
+  return {
+    type: 'doc',
+    content: [{ type: 'paragraph', content: [{ type: 'text', text }] }],
+  };
+}
+
+type LinkSourceNote = {
+  id: string;
+  title: string;
+  content_text?: string;
+  deleted_at?: string | null;
+};
+
+/**
+ * Offline replacement for the `note_links` queries: derives both outgoing links
+ * and backlinks from the cached bodies of the user's notes.
+ *
+ * Unresolved links keep `target_note_id = null`, exactly like the database rows
+ * for dangling `[[links]]`, so the UI can flag them the same way.
+ */
+export function buildLocalLinks(
+  noteId: string,
+  notes: LinkSourceNote[],
+): { links: NoteLink[]; incoming: NoteLink[] } {
+  const visible = notes.filter((note) => !note.deleted_at);
+  const titleIndex = buildTitleIndex(visible);
+  const current = visible.find((note) => note.id === noteId);
+  const now = new Date().toISOString();
+
+  const links: NoteLink[] = parseWikiLinks(
+    current?.content_text ? textToDoc(current.content_text) : null,
+  ).map((link, index) => ({
+    id: `local-out-${index}`,
+    user_id: '',
+    source_note_id: noteId,
+    target_note_id: titleIndex.get(link.normalized) ?? null,
+    target_title: link.title,
+    created_at: now,
+    updated_at: now,
+  }));
+
+  const currentTitle = normalizeFa(current?.title ?? '');
+  const incoming: NoteLink[] = [];
+
+  if (currentTitle) {
+    for (const note of visible) {
+      if (note.id === noteId || !note.content_text) continue;
+      const targets = parseWikiLinks(textToDoc(note.content_text));
+      if (!targets.some((link) => link.normalized === currentTitle)) continue;
+      incoming.push({
+        id: `local-in-${note.id}`,
+        user_id: '',
+        source_note_id: note.id,
+        target_note_id: noteId,
+        target_title: current?.title ?? '',
+        created_at: now,
+        updated_at: now,
+      });
+    }
+  }
+
+  return { links, incoming };
 }
