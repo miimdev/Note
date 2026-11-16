@@ -18,15 +18,12 @@ jobs:
           V_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           S_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           S_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-          V_SUPABASE_URL: ${{ vars.SUPABASE_URL }}
-          V_SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
-          V_ANON_KEY: ${{ vars.ANON_KEY }}
+          OTHER: ${{ vars.SUPABASE_URL }}|${{ vars.SUPABASE_ANON_KEY }}|${{ vars.ANON_KEY }}|${{ secrets.SUPABASE_ANON_KEY }}
         run: |
-          name() { [ -n "$1" ] && echo "$2: present (length ${#1})" || echo "$2: MISSING"; }
+          name() { if [ -n "$1" ]; then echo "PROBE $2=present(${#1})"; else echo "PROBE $2=MISSING"; fi; }
           name "$V_URL"  "vars.NEXT_PUBLIC_SUPABASE_URL"
           name "$V_KEY"  "vars.NEXT_PUBLIC_SUPABASE_ANON_KEY"
           name "$S_URL"  "secrets.NEXT_PUBLIC_SUPABASE_URL"
           name "$S_KEY"  "secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY"
-          name "$V_SUPABASE_URL" "vars.SUPABASE_URL"
-          name "$V_SUPABASE_ANON_KEY" "vars.SUPABASE_ANON_KEY"
-          name "$V_ANON_KEY" "vars.ANON_KEY"
+          echo "PROBE other=$OTHER"
+          echo "::notice title=PROBE::$( [ -n "$V_URL" ] && echo 'V_URL yes' || echo 'V_URL no' ) / $( [ -n "$V_KEY" ] && echo 'V_KEY yes' || echo 'V_KEY no' ) / $( [ -n "$S_URL" ] && echo 'S_URL yes' || echo 'S_URL no' ) / $( [ -n "$S_KEY" ] && echo 'S_KEY yes' || echo 'S_KEY no' ) / other=$OTHER"
