@@ -10,6 +10,7 @@ import { useNotesStore } from '@/store/notes-store';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toPersianDigits } from '@/lib/jalali';
+import { buildLocalGraph } from '@/lib/graph';
 
 const GraphCanvas = dynamic(() => import('./graph-canvas').then((mod) => mod.GraphCanvas), {
   ssr: false,
@@ -31,6 +32,7 @@ type GraphData = {
 export function GraphScreen() {
   const { userId } = useSync();
   const notes = useNotesStore((state) => state.notes);
+  const noteTags = useNotesStore((state) => state.noteTags);
   const router = useRouter();
   const [data, setData] = React.useState<GraphData | null>(null);
   const [loading, setLoading] = React.useState(true);
@@ -43,23 +45,16 @@ export function GraphScreen() {
     const { data: payload, error } = await client.rpc('note_graph', { p_limit: 400 });
 
     if (error || !payload) {
-      // Offline fallback: build the graph from the local cache.
-      const localNodes = notes
-        .filter((note) => !note.deleted_at && !note.is_archived)
-        .map((note) => ({
-          id: note.id,
-          title: note.title,
-          is_favorite: note.is_favorite,
-          folder_id: note.folder_id,
-          updated_at: note.updated_at,
-          tag_count: 0,
-        }));
-      setData({ nodes: localNodes, edges: [] });
+      // Offline fallback: rebuild nodes *and* edges from the local cache so the
+      // graph still shows the [[links]] while the network is down.
+      const tagCounts = new Map<string, number>();
+      for (const [noteId, tagIds] of noteTags) tagCounts.set(noteId, tagIds.length);
+      setData(buildLocalGraph(notes, tagCounts));
     } else {
       setData(payload as GraphData);
     }
     setLoading(false);
-  }, [notes, userId]);
+  }, [notes, noteTags, userId]);
 
   React.useEffect(() => {
     void load();
