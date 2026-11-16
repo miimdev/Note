@@ -1,0 +1,23 @@
+name: Probe vars
+
+on:
+  push:
+    branches: [arena/3e66d4c5-note]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Which values arrived
+        env:
+          ALL_VARS: ${{ toJSON(vars) }}
+          ALL_SECRETS_PRESENT: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY != '' }}
+          V_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+          V_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        run: |
+          echo "::notice title=PROBE_NAMES::$(printf '%s' "$ALL_VARS" | jq -r 'if . == "" then "(no variables at all)" else (keys | join(", ")) end')"
+          echo "::notice title=PROBE_STATE::repo_var_url_len=${#V_URL} repo_var_key_len=${#V_KEY} anon_secret_present=$ALL_SECRETS_PRESENT"
