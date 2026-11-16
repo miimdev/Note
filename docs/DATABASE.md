@@ -393,3 +393,71 @@ on conflict do nothing;
 5. تریگر روی `auth.users` (`on_auth_user_created`) باید با دسترسی admin ساخته شود — در migration پروژه‌ی Supabase مجاز است.
 
 **لطفاً این سند + `ARCHITECTURE.md` را تایید کنید تا مرحله ۲ (ساخت پروژه، اسکافولد، اجرای migration) شروع شود.**
+
+---
+
+## تأیید اجرای migrationها روی پروژه‌ی واقعی
+
+پروژه: `efvnoyrqqkotbeyjlfzm` — آخرین بررسی: **۱۴۰۴/۰۸/۲۵** (2026-11-16)
+
+### جدول‌ها و RLS
+
+۱۱ جدول در schema `public`؛ RLS روی همه فعال است (`profiles` با `force`).
+
+| جدول            | RLS | force | policy |
+| --------------- | --- | ----- | ------ |
+| `attachments`   | ✅  | –     | ۱      |
+| `folders`       | ✅  | –     | ۱      |
+| `note_links`    | ✅  | –     | ۱      |
+| `note_tags`     | ✅  | –     | ۱      |
+| `note_versions` | ✅  | –     | ۳      |
+| `notes`         | ✅  | –     | ۱      |
+| `profiles`      | ✅  | ✅    | ۳      |
+| `reminders`     | ✅  | –     | ۱      |
+| `shared_notes`  | ✅  | –     | ۱      |
+| `tags`          | ✅  | –     | ۱      |
+| `templates`     | ✅  | –     | ۴      |
+
+### تریگرها (`tgenabled = 'O'` یعنی فعال)
+
+| تریگر                      | جدول           | تابع                          |
+| -------------------------- | -------------- | ----------------------------- |
+| `trg_notes_search`         | `notes`        | `notes_before_write`          |
+| `trg_notes_links`          | `notes`        | `notes_after_write_links`     |
+| `trg_notes_resolve_links`  | `notes`        | `notes_resolve_pending_links` |
+| `trg_notes_snapshot`       | `notes`        | `notes_snapshot_version`      |
+| `trg_notes_updated`        | `notes`        | `set_updated_at`              |
+| `trg_note_links_no_self`   | `note_links`   | `notes_drop_self_links`       |
+| `trg_note_links_updated`   | `note_links`   | `set_updated_at`              |
+| `trg_folders_no_cycle`     | `folders`      | `folders_no_cycle`            |
+| `trg_folders_updated`      | `folders`      | `set_updated_at`              |
+| `trg_reminders_updated`    | `reminders`    | `set_updated_at`              |
+| `trg_tags_updated`         | `tags`         | `set_updated_at`              |
+| `trg_templates_updated`    | `templates`    | `set_updated_at`              |
+| `trg_shared_notes_updated` | `shared_notes` | `set_updated_at`              |
+| `trg_attachments_updated`  | `attachments`  | `set_updated_at`              |
+| `trg_profiles_updated`     | `profiles`     | `set_updated_at`              |
+| `on_auth_user_created`     | `auth.users`   | `handle_new_user`             |
+
+### تابع‌های `security definer` با `search_path` قفل‌شده
+
+`expire_shared_notes`, `get_shared_note`, `handle_new_user`, `notes_after_write_links`,
+`notes_drop_self_links`, `notes_resolve_pending_links`, `notes_snapshot_version`,
+`purge_trashed_notes`, `refresh_note_links` — همه با `SET search_path = public`.
+
+تابع‌های `search_notes`, `related_notes`, `note_graph`, `suggest_note_titles`
+`security invoker` هستند و به RLS کاربر تکیه می‌کنند (درست، چون داده‌ی خصوصی است).
+
+### آزمون دودی تریگرها (idempotent، با `rollback`)
+
+در یک تراکنش و با `rollback` انتها:
+
+1. ایجاد یادداشت «zzz probe target» و «zzz probe source» که `[[zzz probe target]]` دارد
+   → `content_text` به `[[zzz probe target]]` تبدیل شد (تریگر `trg_notes_search` ✅)
+   → `search_vector` پر شد ✅
+   → لینک خروجی **resolve شد** (`note_links.target_note_id` پر) ✅
+2. تغییر عنوان منبع (نسخه ۱ → ۲)
+   → `version` به ۲ رفت و یک ردیف در `note_versions` با محتوای نسخه‌ی قبلی ثبت شد
+   (`trg_notes_snapshot` + throttle پنج‌دقیقه‌ای + نگه‌داشتن ۳۰ نسخه) ✅
+
+هیچ داده‌ای روی پروژه باقی نماند؛ `notes` همان ۳ ردیف قبلی است.

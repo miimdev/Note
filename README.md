@@ -301,9 +301,9 @@ CI: `.github/workflows/ci.yml` → typecheck، lint، prettier check، تست، 
 - [ ] جستجوی `ts_headline` سمت سرور برای هایلایت دقیق‌تر متون طولانی
 - [ ] تاریخچه undo/redo بین دستگاه‌ها (الان undo فقط محلی است)
 - [ ] ویرایش سریع درجا (inline) در لیست یادداشت‌ها
-- [ ] i18n کامل UI (الان رشته‌ها فارسی و ساختار locale آماده است)
+- [ ] i18n کامل UI (الان رشته‌ها فارسی و ساختار locale آماده است؛ سوئیچ English فعلاً فقط جهت چیدمان را عوض می‌کند)
 - [ ] Push Notification واقعی (Web Push + VAPID) به‌جای نوتیفیکیشن تب باز
-- [ ] تست‌های E2E بیشتر برای فلوی آفلاین → آنلاین با Playwright context offline
+- [ ] تست‌های E2E بیشتر برای فلوی آفلاین → آنلاین با Playwright context offline (اجرای Playwright در این محیط ممکن نشد؛ اسکریپت‌ها با Chromium محلی اجرا شوند)
 
 ---
 
