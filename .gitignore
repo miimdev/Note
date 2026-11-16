@@ -20,7 +20,11 @@ playwright-report
 # scripts/prepare-server-build.mjs (the GitHub Pages build omits them).
 /middleware.ts
 /app/api/
-/app/(auth)/callback/route.ts
+# /callback needs a page in the static export and a route handler with a server;
+# Next.js allows only one, so the directory is generated:
+#   build:static -> server/app/callback/static/page.tsx
+#   build / dev  -> server/app/callback/route.ts
+/app/(auth)/callback/
 /app/print/[id]/
 /app/s/[token]/
 /app/(workspace)/notes/[id]/
