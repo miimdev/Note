@@ -202,6 +202,31 @@ export const SlashCommand = Extension.create<SlashCommandOptions>({
       },
       render: () => {
         let component: ReactRenderer<SlashMenuRef> | null = null;
+        let mounted = false;
+
+        // ReactRenderer creates a detached element, so it must be attached to the
+        // document (and positioned at the caret) or the menu is never visible.
+        const place = (clientRect?: (() => DOMRect | null) | null) => {
+          const element = component?.element as HTMLElement | undefined;
+          if (!element) return;
+          const rect = clientRect?.();
+          if (!rect) return;
+          const width = element.offsetWidth || 288;
+          const viewportWidth = window.innerWidth;
+          const left = Math.min(Math.max(rect.left, 8), viewportWidth - width - 8);
+          const top =
+            rect.bottom + 248 > window.innerHeight ? Math.max(rect.top - 256, 8) : rect.bottom + 6;
+          element.style.position = 'fixed';
+          element.style.left = `${left}px`;
+          element.style.top = `${top}px`;
+          element.style.zIndex = '60';
+        };
+
+        const destroy = () => {
+          component?.destroy();
+          component = null;
+          mounted = false;
+        };
 
         return {
           onStart: (props) => {
@@ -209,6 +234,11 @@ export const SlashCommand = Extension.create<SlashCommandOptions>({
               props: { items: props.items, command: props.command, query: props.query },
               editor: props.editor,
             });
+            const element = component.element as HTMLElement;
+            element.dataset.slashMenu = '';
+            document.body.appendChild(element);
+            mounted = true;
+            place(props.clientRect);
           },
           onUpdate: (props) => {
             component?.updateProps({
@@ -216,18 +246,17 @@ export const SlashCommand = Extension.create<SlashCommandOptions>({
               command: props.command,
               query: props.query,
             });
+            place(props.clientRect);
           },
           onKeyDown: (props) => {
             if (props.event.key === 'Escape') {
-              component?.destroy();
-              component = null;
+              destroy();
               return true;
             }
             return component?.ref?.onKeyDown(props.event) ?? false;
           },
           onExit: () => {
-            component?.destroy();
-            component = null;
+            if (mounted) destroy();
           },
         };
       },

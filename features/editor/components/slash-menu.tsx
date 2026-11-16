@@ -24,9 +24,15 @@ export type SlashMenuRef = { onKeyDown: (event: KeyboardEvent) => boolean };
 export const SlashMenu = React.forwardRef<SlashMenuRef, SlashMenuProps>(
   ({ items, command }, ref) => {
     const [selected, setSelected] = React.useState(0);
+    const selectedRef = React.useRef(0);
     const containerRef = React.useRef<HTMLDivElement>(null);
 
     React.useEffect(() => {
+      selectedRef.current = selected;
+    }, [selected]);
+
+    React.useEffect(() => {
+      selectedRef.current = 0;
       setSelected(0);
     }, [items]);
 
@@ -39,14 +45,15 @@ export const SlashMenu = React.forwardRef<SlashMenuRef, SlashMenuProps>(
       onKeyDown: (event: KeyboardEvent) => {
         if (items.length === 0) return false;
         if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
-          setSelected((current) => {
-            const delta = event.key === 'ArrowDown' ? 1 : -1;
-            return (current + delta + items.length) % items.length;
-          });
+          const delta = event.key === 'ArrowDown' ? 1 : -1;
+          const next = (selectedRef.current + delta + items.length) % items.length;
+          selectedRef.current = next;
+          setSelected(next);
           return true;
         }
         if (event.key === 'Enter' || event.key === 'Tab') {
-          const item = items[selected];
+          // Read the ref: the key may arrive before React re-renders the handle.
+          const item = items[selectedRef.current];
           if (item) command(item);
           return true;
         }
