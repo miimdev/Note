@@ -12,7 +12,6 @@ import {
   formatJalaliDate,
   isoToday,
   jalaliWeekdayLabel,
-  toGregorian,
   toJalali,
   formatGregorianDate,
 } from '@/lib/jalali';
@@ -156,9 +155,8 @@ export function DailyScreen() {
           و می‌توانید آن را از دکمه‌های بالا یا تنظیمات تغییر دهید.
         </p>
         <p className="mt-1">
-          امروز: {toPersianDigits(toJalali(new Date()).year)}/
-          {toPersianDigits(toGregorian(toJalali(new Date())).getMonth() + 1)} — تاریخ شمسی با
-          الگوریتم داخلی محاسبه می‌شود.
+          امروز: {formatJalaliDate(new Date())} ({toPersianDigits(toJalali(new Date()).year)}) —
+          تاریخ شمسی با الگوریتم داخلی و بدون وابستگی به مرورگر محاسبه می‌شود.
         </p>
       </section>
     </div>
