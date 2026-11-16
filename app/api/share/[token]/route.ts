@@ -32,7 +32,13 @@ export async function GET(request: Request, { params }: Params) {
   const { data, error } = await supabase.rpc('get_shared_note', { share_token: token });
 
   if (error) {
-    return NextResponse.json({ error: 'lookup_failed' }, { status: 500 });
+    // PostgREST returns a code for SQL errors; an empty code means the request
+    // never reached the database (network/DNS), which is a 503, not a 500.
+    const status = error.code ? 500 : 503;
+    return NextResponse.json(
+      { error: status === 503 ? 'unavailable' : 'lookup_failed' },
+      { status },
+    );
   }
 
   const note = (data as SharedNotePayload[] | null)?.[0];

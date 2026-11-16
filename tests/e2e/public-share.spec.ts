@@ -11,3 +11,13 @@ test.describe('Public sharing', () => {
     expect(response.status()).toBe(400);
   });
 });
+
+test.describe('Public API', () => {
+  test('report a server-side outage separately from a missing note', async ({ request }) => {
+    const response = await request.get('/api/share/0123456789abcdef');
+    // Either the note does not exist (404) or Supabase is unreachable (503).
+    expect([404, 503]).toContain(response.status());
+    const body = await response.json();
+    expect(['not_found', 'unavailable']).toContain(body.error);
+  });
+});

@@ -9,26 +9,48 @@ import { formatJalaliDate } from '@/lib/jalali';
 
 type Params = { params: Promise<{ token: string }> };
 
+/** A transient database outage must not look like a revoked link. */
+function SharedUnavailable() {
+  return (
+    <main className="flex min-h-dvh flex-col items-center justify-center gap-3 px-6 text-center">
+      <h1 className="text-lg font-semibold">موقتاً در دسترس نیست</h1>
+      <p className="max-w-sm text-sm text-muted-foreground">
+        ارتباط با سرور برقرار نشد. چند لحظه بعد دوباره تلاش کنید.
+      </p>
+      <a href="" className="text-sm text-primary underline-offset-4 hover:underline">
+        تلاش دوباره
+      </a>
+    </main>
+  );
+}
+
 export const dynamic = 'force-dynamic';
 
-async function fetchShared(token: string): Promise<SharedNotePayload | null> {
+type SharedResult =
+  { status: 'ok'; note: SharedNotePayload } | { status: 'missing' } | { status: 'unavailable' };
+
+async function fetchShared(token: string): Promise<SharedResult> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !key) return null;
+  if (!url || !key) return { status: 'missing' };
 
   // Anon key + RPC only: shared_notes has no anon RLS policy on purpose.
   const supabase = createClient(url, key, { auth: { persistSession: false } });
   const { data, error } = await supabase.rpc('get_shared_note', { share_token: token });
-  if (error || !data) return null;
+  if (error) {
+    // No SQL error code means the request never reached the database.
+    return { status: error.code ? 'missing' : 'unavailable' };
+  }
 
-  const rows = data as SharedNotePayload[];
-  return rows[0] ?? null;
+  const rows = (data ?? []) as SharedNotePayload[];
+  return rows[0] ? { status: 'ok', note: rows[0] } : { status: 'missing' };
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { token } = await params;
-  const note = await fetchShared(token);
-  if (!note) return { title: 'یادداشت پیدا نشد', robots: { index: false } };
+  const result = await fetchShared(token);
+  if (result.status !== 'ok') return { title: 'یادداشت پیدا نشد', robots: { index: false } };
+  const note = result.note;
   return {
     title: note.title || 'یادداشت اشتراکی',
     description: note.author_name ? `یادداشت عمومی از ${note.author_name}` : 'یادداشت عمومی',
@@ -38,9 +60,11 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
 export default async function SharedNotePage({ params }: Params) {
   const { token } = await params;
-  const note = await fetchShared(token);
-  if (!note) notFound();
+  const result = await fetchShared(token);
+  if (result.status === 'missing') notFound();
+  if (result.status === 'unavailable') return <SharedUnavailable />;
 
+  const note = result.note;
   const html = sanitizeHtml(docToHtml(note.content));
 
   return (
