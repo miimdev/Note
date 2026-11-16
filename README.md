@@ -253,11 +253,11 @@ RLS (کاربر دیگر صفر ردیف می‌بیند)، `anon` بدون gran
 npm run typecheck    # TypeScript strict
 npm run lint         # ESLint (next/core-web-vitals + prettier)
 npm run format       # Prettier
-npm test             # Vitest — ۸۴ تست واحد
+npm test             # Vitest — ۹۰ تست واحد
 npm run test:e2e     # Playwright (نیازمند نصب مرورگر)
 ```
 
-پوشش تست واحد: نرمال‌سازی و جستجو (`search-query`)، هایلایت و قطعه‌سازی، لینک‌های ویکی (`links`)، ادغام تداخل و outbox (`sync-merge`)، تبدیل JSON→HTML/Markdown و sanitize، تقویم شمسی، تشخیص جهت متن، ورود Markdown.
+پوشش تست واحد: نرمال‌سازی و جستجو (`search-query`)، هایلایت و قطعه‌سازی، لینک‌های ویکی (`links`)، ادغام تداخل و outbox (`sync-merge`)، تبدیل JSON→HTML/Markdown و sanitize، تقویم شمسی، تشخیص جهت متن، ورود Markdown، و لایه‌ی داده (`notes-repo`, `local-db` با fake-indexeddb: صف outbox، کلید ترکیبی note_tags، متادیتای همگام‌سازی).
 
 E2E: مسیرهای عمومی (ورود/ثبت‌نام/ریست، ریدایرکت مسیرهای محافظت‌شده، لینک عمومی نامعتبر، manifest و صفحه آفلاین) + فلوی احراز‌شده با `E2E_EMAIL`/`E2E_PASSWORD`.
 
@@ -292,7 +292,7 @@ CI: `.github/workflows/ci.yml` → typecheck، lint، prettier check، تست، 
 - [x] اشتراک عمومی با token/انقضا، خروجی Markdown/HTML/PDF/zip، ورود Markdown
 - [x] PWA (manifest + service worker + صفحه آفلاین) + فونت self-hosted
 - [x] دستیار AI با OpenRouter پشت feature flag و rate limit
-- [x] تست واحد (۸۴)، E2E، CI، ESLint/Prettier، README و مستندات
+- [x] تست واحد (۹۰)، E2E، CI، ESLint/Prettier، README و مستندات
 
 **باقی‌مانده / پیشنهاد بهبود**
 

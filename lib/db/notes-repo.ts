@@ -50,7 +50,9 @@ export async function deleteNoteLocal(id: string): Promise<void> {
 }
 
 export async function enqueue(entry: Omit<OutboxEntry, 'id'>): Promise<number> {
-  const id = await getDb().outbox.add(entry);
+  // Dexie writes the generated key back into the object it is given, so the
+  // caller's object is never reused (that would collide on `id` next time).
+  const id = await getDb().outbox.add({ ...entry, id: undefined } as unknown as OutboxEntry);
   return Number(id);
 }
 
