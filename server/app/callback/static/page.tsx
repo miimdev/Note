@@ -12,7 +12,8 @@ import { CallbackScreen } from '@/features/auth/callback-screen';
  * same segment, and Supabase's redirect URL is the same either way.
  */
 export const metadata: Metadata = {
-  title: 'ورود | Note',
+  // app/layout.tsx already appends ' | Note'.
+  title: 'ورود',
   robots: { index: false, follow: false },
 };
 
