@@ -254,7 +254,7 @@ RLS (کاربر دیگر صفر ردیف می‌بیند)، `anon` بدون gran
 npm run typecheck    # TypeScript strict
 npm run lint         # ESLint (next/core-web-vitals + prettier)
 npm run format       # Prettier
-npm test             # Vitest — ۱۲۶ تست واحد
+npm test             # Vitest — ۱۲۸ تست واحد
 npm run test:e2e     # Playwright (نیازمند نصب مرورگر)
 ```
 
@@ -310,10 +310,11 @@ NEXT_PUBLIC_STATIC_EXPORT=true NEXT_PUBLIC_BASE_PATH=/Note npm run build:static
 2. Settings → Secrets and variables → Actions → **Variables**: `NEXT_PUBLIC_SUPABASE_URL`
    و `NEXT_PUBLIC_SUPABASE_ANON_KEY` (کلید anon عمومی است؛ RLS دسترسی را کنترل می‌کند).
    `NEXT_PUBLIC_SITE_URL` هم می‌تواند `https://<user>.github.io/<repo>/` باشد.
-   مقدارها را در تب **Secrets** بگذارید هم کار می‌کند؛ workflow هر دو جا و همچنین
-   سطح Environment را می‌خواند. کلید باید anon یا `sb_publishable_…` باشد؛ اگر
-   اشتباهاً `service_role` بگذارید مرحله‌ی Verify بیلد را متوقف می‌کند. بدون این دو مقدار، مرحله‌ی «Verify artifact» عمداً بیلد را متوقف
-   می‌کند تا سایت با بیلد ناقص منتشر نشود.
+   مقدارها را در تب **Secrets** بگذارید هم کار می‌کند؛ workflow هم سطح
+   repository و هم سطح Environment را می‌خواند. کلید باید anon یا
+   `sb_publishable_…` باشد؛ اگر اشتباهاً `service_role` بگذارید مرحله‌ی Verify
+   بیلد را متوقف می‌کند. بدون این دو مقدار هم بیلد عمداً متوقف می‌شود تا سایت با
+   بیلد ناقص منتشر نشود (پیام خطا فهرست نام‌هایی را که به job رسیده نشان می‌دهد).
 3. در Supabase → Authentication → URL Configuration:
    - **Site URL**: `https://<user>.github.io/<repo>/`
    - **Redirect URLs**: `https://<user>.github.io/<repo>/callback`،
@@ -327,6 +328,29 @@ NEXT_PUBLIC_STATIC_EXPORT=true NEXT_PUBLIC_BASE_PATH=/Note npm run build:static
    ```bash
    node scripts/verify-pages.mjs https://<user>.github.io/<repo>
    ```
+
+### نکته‌هایی که فقط در عمل معلوم می‌شوند
+
+- **مقادیر `NEXT_PUBLIC_*` در `index.html` نیستند**؛ در
+  `out/_next/static/chunks/*.js` اینلاین می‌شوند. هر بررسی بیلد باید همان‌جا را
+  بگردد (workflow و `ci.yml` همین کار را می‌کنند).
+- **`/callback` دو نسخه دارد**: در خروجی استاتیک یک _صفحه_
+  (`server/app/callback/static/page.tsx`) و در بیلد سروری یک _route handler_
+  (`server/app/callback/route.ts`). Next.js هر دو را در یک segment قبول نمی‌کند،
+  پس `scripts/prepare-server-build.mjs` بسته به حالت یکی را در
+  `app/(auth)/callback/` می‌سازد (این پوشه در `.gitignore` است). همه‌ی مسیرهای
+  داینامیک (`notes/[id]`، `print/[id]`، `s/[token]`، …) هم به همین شکل تولید
+  می‌شوند؛ وگرنه یک `git commit -a` بعد از بیلد استاتیک آن‌ها را از مخزن پاک
+  می‌کرد.
+- **base path دو طرفه است**: `window.location.pathname` قبلاً `/Note` را دارد و
+  `router.push` دوباره اضافه‌اش می‌کند؛ برای همین `stripBasePath()` در
+  `lib/paths.ts` وجود دارد. آدرس بازگشت Supabase هم باید `/Note/callback` باشد
+  (تابع `appUrl('/')`)، نه `https://<user>.github.io/callback`.
+- **CI خروجی Pages را هم بیلد می‌کند** (`static-export` job در `ci.yml`)، چون
+  پیش‌تر فقط بیلد سروری تست می‌شد و خرابیِ مخصوص استاتیک تا بعد از merge دیده
+  نمی‌شد.
+- **کش CDN**: مسیر جدید مثل `/callback/` ممکن است چند دقیقه ۴۰۴ کش‌شده بماند؛
+  با یک query (`?v=1`) می‌شود فوراً بررسی کرد.
 
 ---
 
@@ -347,7 +371,7 @@ NEXT_PUBLIC_STATIC_EXPORT=true NEXT_PUBLIC_BASE_PATH=/Note npm run build:static
 - [x] اشتراک عمومی با token/انقضا، خروجی Markdown/HTML/PDF/zip، ورود Markdown
 - [x] PWA (manifest + service worker + صفحه آفلاین) + فونت self-hosted
 - [x] دستیار AI با OpenRouter پشت feature flag و rate limit
-- [x] تست واحد (۱۲۶)، E2E، CI، ESLint/Prettier، README و مستندات
+- [x] تست واحد (۱۲۸)، E2E، CI، ESLint/Prettier، README و مستندات
 - [x] بیلد استاتیک و workflow دیپلوی GitHub Pages (`deploy.yml` + `verify-pages.mjs`)
 
 **باقی‌مانده / پیشنهاد بهبود**
