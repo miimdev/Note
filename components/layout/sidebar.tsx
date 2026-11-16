@@ -5,12 +5,12 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   Archive,
+  Bell,
   CalendarDays,
   ChevronDown,
   ChevronRight,
   FileText,
   FolderPlus,
-  Folder as FolderIcon,
   Globe,
   Hash,
   LayoutGrid,
@@ -18,7 +18,6 @@ import {
   Moon,
   PanelLeftClose,
   PanelLeftOpen,
-  Pin,
   Plus,
   Search,
   Settings,
@@ -26,7 +25,6 @@ import {
   Star,
   Sun,
   Trash2,
-  TrendingUp,
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
@@ -39,13 +37,13 @@ import { FolderTree, type FolderNode } from '@/features/folders/folder-tree';
 import { TagList } from '@/features/tags/tag-list';
 import { NewFolderDialog } from '@/features/folders/new-folder-dialog';
 import { useNoteActions } from '@/features/notes/use-note-actions';
-import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { toPersianDigits } from '@/lib/jalali';
 
 const NAV_ITEMS = [
   { href: '/notes', label: 'همه یادداشت‌ها', icon: FileText },
   { href: '/favorites', label: 'علاقه‌مندی‌ها', icon: Star },
   { href: '/daily', label: 'یادداشت روزانه', icon: CalendarDays },
+  { href: '/reminders', label: 'یادآورها', icon: Bell },
   { href: '/graph', label: 'شبکه دانش', icon: Globe },
   { href: '/templates', label: 'قالب‌ها', icon: LayoutGrid },
   { href: '/archive', label: 'آرشیو', icon: Archive },
@@ -121,12 +119,9 @@ export function Sidebar() {
     }
   };
 
+  // `signOut` on the sync provider already ends the Supabase session, clears
+  // the local store and navigates to /login.
   const handleSignOut = async () => {
-    try {
-      await getSupabaseBrowserClient().auth.signOut();
-    } catch {
-      /* ignore */
-    }
     await signOut();
   };
 
@@ -352,17 +347,9 @@ export function Sidebar() {
             <LogOut className="h-4 w-4" />
           </Button>
         </div>
-        <div className="mt-1 flex flex-wrap gap-1 px-1.5 text-[10px] text-muted-foreground">
-          <span className="inline-flex items-center gap-1">
-            <Pin className="h-3 w-3" /> سنجاق
-          </span>
-          <span className="inline-flex items-center gap-1">
-            <TrendingUp className="h-3 w-3" /> مرتب‌سازی
-          </span>
-          <span className="inline-flex items-center gap-1">
-            <FolderIcon className="h-3 w-3" /> پوشه
-          </span>
-        </div>
+        <p className="mt-1 px-1.5 text-[10px] text-muted-foreground">
+          همه تغییرها خودکار و بدون نیاز به اینترنت ذخیره می‌شوند.
+        </p>
       </div>
 
       <NewFolderDialog open={folderDialogOpen} onOpenChange={setFolderDialogOpen} />
