@@ -1,0 +1,57 @@
+{
+  "name": "Note — دفترچه یادداشت هوشمند",
+  "short_name": "Note",
+  "description": "یادداشت‌برداری بلاکی، شبکه دانش و جستجوی دوزبانه با پشتیبانی کامل آفلاین.",
+  "start_url": "./notes/",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#ffffff",
+  "theme_color": "#5b4bdb",
+  "lang": "fa",
+  "dir": "rtl",
+  "categories": ["productivity", "utilities"],
+  "icons": [
+    {
+      "src": "./icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "یادداشت جدید",
+      "url": "./notes?new=1",
+      "description": "ساخت سریع یادداشت"
+    },
+    {
+      "name": "یادداشت روزانه",
+      "url": "./daily",
+      "description": "یادداشت امروز"
+    },
+    {
+      "name": "جستجو",
+      "url": "./search",
+      "description": "جستجو در همه یادداشت‌ها"
+    }
+  ]
+}

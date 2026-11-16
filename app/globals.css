@@ -1,0 +1,253 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 224 20% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 224 20% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 20% 12%;
+    --primary: 244 65% 54%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 12% 96%;
+    --secondary-foreground: 224 20% 18%;
+    --muted: 240 12% 96%;
+    --muted-foreground: 224 10% 44%;
+    --accent: 244 60% 96%;
+    --accent-foreground: 244 60% 30%;
+    --destructive: 0 72% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 10% 90%;
+    --input: 240 10% 88%;
+    --ring: 244 65% 54%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 224 24% 8%;
+    --foreground: 220 20% 94%;
+    --card: 224 22% 10%;
+    --card-foreground: 220 20% 94%;
+    --popover: 224 22% 10%;
+    --popover-foreground: 220 20% 94%;
+    --primary: 244 78% 68%;
+    --primary-foreground: 224 30% 10%;
+    --secondary: 224 18% 16%;
+    --secondary-foreground: 220 20% 92%;
+    --muted: 224 18% 15%;
+    --muted-foreground: 220 12% 66%;
+    --accent: 244 30% 20%;
+    --accent-foreground: 244 60% 88%;
+    --destructive: 0 62% 52%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 224 16% 20%;
+    --input: 224 16% 22%;
+    --ring: 244 78% 68%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-sans);
+    text-rendering: optimizeLegibility;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+
+  /* Persian digits feel more native in the UI chrome */
+  [dir='rtl'] .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer components {
+  .surface {
+    @apply rounded-xl border bg-card shadow-sm;
+  }
+
+  .muted-label {
+    @apply text-xs font-medium uppercase tracking-wide text-muted-foreground;
+  }
+
+  .kbd {
+    @apply inline-flex h-5 min-w-5 items-center justify-center rounded border bg-muted px-1 font-mono text-[11px] text-muted-foreground;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* TipTap editor                                                       */
+/* ------------------------------------------------------------------ */
+.ProseMirror {
+  @apply min-h-[45vh] w-full text-[15px] leading-8 outline-none;
+  word-break: break-word;
+}
+
+.ProseMirror > * + * {
+  @apply mt-3;
+}
+
+.ProseMirror h1 {
+  @apply mt-6 text-2xl font-semibold tracking-tight;
+}
+.ProseMirror h2 {
+  @apply mt-5 text-xl font-semibold tracking-tight;
+}
+.ProseMirror h3 {
+  @apply mt-4 text-lg font-semibold;
+}
+
+.ProseMirror ul {
+  @apply list-disc ps-6;
+}
+.ProseMirror ol {
+  @apply list-decimal ps-6;
+}
+.ProseMirror ul[data-type='taskList'] {
+  @apply list-none ps-1;
+}
+.ProseMirror ul[data-type='taskList'] li {
+  @apply flex items-start gap-2;
+}
+.ProseMirror ul[data-type='taskList'] li > label {
+  @apply mt-1.5 flex items-center;
+}
+.ProseMirror ul[data-type='taskList'] li > div {
+  @apply flex-1;
+}
+.ProseMirror ul[data-type='taskList'] li[data-checked='true'] > div {
+  @apply text-muted-foreground line-through;
+}
+
+.ProseMirror blockquote {
+  @apply border-s-2 border-primary/40 ps-4 text-muted-foreground;
+}
+
+.ProseMirror pre {
+  @apply overflow-x-auto rounded-lg bg-muted p-4 font-mono text-[13px] leading-6;
+  direction: ltr;
+  text-align: left;
+}
+
+.ProseMirror code:not(pre code) {
+  @apply rounded bg-muted px-1 py-0.5 font-mono text-[0.85em];
+}
+
+.ProseMirror hr {
+  @apply my-6 border-border;
+}
+
+.ProseMirror table {
+  @apply w-full table-fixed border-collapse text-sm;
+}
+.ProseMirror th,
+.ProseMirror td {
+  @apply border border-border px-2 py-1.5 align-top;
+}
+.ProseMirror th {
+  @apply bg-muted font-semibold;
+}
+
+.ProseMirror img {
+  @apply max-w-full rounded-lg;
+}
+
+.ProseMirror img.ProseMirror-selectednode {
+  @apply ring-2 ring-primary;
+}
+
+.ProseMirror .is-empty::before {
+  content: attr(data-placeholder);
+  @apply pointer-events-none float-start h-0 text-muted-foreground/60;
+}
+
+.ProseMirror .wiki-link,
+.ProseMirror a {
+  @apply cursor-pointer rounded text-primary underline decoration-primary/30 underline-offset-2;
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  @apply pointer-events-none float-start h-0 text-muted-foreground/60;
+}
+
+.ProseMirror-focused {
+  @apply outline-none;
+}
+
+.focus-mode .chrome-hidden {
+  @apply hidden;
+}
+
+/* ------------------------------------------------------------------ */
+/* Highlighting for search results                                     */
+/* ------------------------------------------------------------------ */
+mark.search-hit {
+  @apply rounded bg-amber-200/70 px-0.5 text-inherit dark:bg-amber-400/30;
+}
+
+/* ------------------------------------------------------------------ */
+/* Print / PDF                                                         */
+/* ------------------------------------------------------------------ */
+@media print {
+  @page {
+    margin: 18mm 16mm;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: #fff !important;
+    color: #111 !important;
+  }
+
+  .print-sheet {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+
+  .ProseMirror {
+    min-height: auto !important;
+  }
+
+  a {
+    color: inherit !important;
+    text-decoration: underline;
+  }
+
+  h1,
+  h2,
+  h3 {
+    break-after: avoid;
+  }
+
+  pre,
+  blockquote,
+  table,
+  img {
+    break-inside: avoid;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

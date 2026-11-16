@@ -1,0 +1,34 @@
+'use client';
+
+import { useRouter } from 'next/navigation';
+import { useHotkeys } from '@/hooks/use-hotkeys';
+import { useUiStore } from '@/store/ui-store';
+import { useNoteActions } from '@/features/notes/use-note-actions';
+import { noteHref } from '@/lib/paths';
+
+const ALLOW_IN_EDITOR = ['mod+k', 'mod+shift+f', 'mod+n'];
+
+export function GlobalHotkeys() {
+  const router = useRouter();
+  const { setCommandPaletteOpen, toggleFocusMode, setShortcutsDialogOpen } = useUiStore();
+  const { createNote } = useNoteActions();
+
+  useHotkeys(
+    {
+      'mod+k': () => setCommandPaletteOpen(true),
+      'mod+n': () => {
+        void createNote({}).then((id) => id && router.push(noteHref(id)));
+      },
+      'mod+shift+f': () => toggleFocusMode(),
+      'mod+shift+e': () => router.push('/search'),
+      '?': () => setShortcutsDialogOpen(true),
+      'mod+/': () => setShortcutsDialogOpen(true),
+      'mod+shift+d': () => router.push('/daily'),
+      'mod+shift+t': () => router.push('/trash'),
+    },
+    // Stable array: a literal here would re-bind the listener on every render.
+    { allowInEditor: ALLOW_IN_EDITOR },
+  );
+
+  return null;
+}
