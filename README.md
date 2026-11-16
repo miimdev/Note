@@ -228,6 +228,7 @@ npm run dev                    # http://localhost:3000
 | `0008_search_functions.sql`          | RPCهای جستجو/گراف/پیشنهاد/سهم عمومی                                         |
 | `0009_maintenance_realtime.sql`      | purge سطل زباله، انقضای لینک، انتشار Realtime                               |
 | `0010_seed_templates.sql`            | ۴ قالب سیستمی                                                               |
+| `0011_resolve_pending_links.sql`     | حل خودکار لینک‌های آویزان هنگام ساخت/تغییر نام یادداشت (idempotent)         |
 
 سه روش اجرا:
 
@@ -279,7 +280,7 @@ CI: `.github/workflows/ci.yml` → typecheck، lint، prettier check، تست، 
 **انجام‌شده**
 
 - [x] معماری، ADRها، طرح دیتابیس و پیش‌نمایش SQL
-- [x] ساخت پروژه Supabase جدید + ۱۰ migration + RLS + Storage + Realtime + RPCها
+- [x] ساخت پروژه Supabase جدید + ۱۱ migration + RLS + Storage + Realtime + RPCها
 - [x] Next.js + TS strict + Tailwind + UI primitives + تم روشن/تاریک/خودکار
 - [x] احراز هویت ایمیل/رمز + Google + تایید ایمیل + بازیابی رمز + middleware
 - [x] ادیتور بلاکی (اسلش، مارک‌داون، جدول، کد، تصویر، چک‌لیست، جهت خودکار، شمارنده‌ها، حالت تمرکز، autosave)
