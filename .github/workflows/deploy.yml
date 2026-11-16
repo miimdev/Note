@@ -48,8 +48,9 @@ jobs:
         # is ever passed here: scripts/post-export.mjs fails the build if one is
         # found in the artifact.
         env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          # Accept both locations: it is easy to store the anon key as a Secret.
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           NEXT_PUBLIC_STATIC_EXPORT: 'true'
           NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
           # Optional: defaults to the Pages URL when the variable is absent.
@@ -60,15 +61,15 @@ jobs:
 
       - name: Verify artifact
         env:
-          SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           BASE: /${{ github.event.repository.name }}
         run: |
           set -e
 
           if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
-            echo "::error title=Supabase variables are missing::Add BOTH repository variables (Settings -> Secrets and variables -> Actions -> Variables): NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY, then re-run this workflow."
+            echo "::error title=Supabase values are missing::Add BOTH values under Settings -> Secrets and variables -> Actions, as repository Variables (recommended) or Secrets: NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY. Then re-run this workflow."
             exit 1
           fi
 
