@@ -11,7 +11,9 @@ test.describe('Offline shell', () => {
     expect(response.ok()).toBeTruthy();
     const manifest = await response.json();
     expect(manifest.short_name).toBe('Note');
-    expect(manifest.start_url).toBe('/notes');
+    // The manifest is portable: relative URLs so the same file works at the
+    // root and under `/<repo>/` on GitHub Pages.
+    expect(manifest.start_url).toMatch(/^\.?\/?(notes\/?)$/);
     expect(Array.isArray(manifest.icons)).toBeTruthy();
   });
 });

@@ -62,7 +62,22 @@ export function AuthForm({ mode }: { mode: Mode }) {
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
-  if (!isSupabaseConfigured) return <SupabaseSetupNotice />;
+  const copy = COPY[mode];
+
+  // Unconfigured (e.g. a fresh clone or CI): still render the page frame, the
+  // heading and the cross-links, otherwise the screen looks broken and the user
+  // cannot reach the other auth pages at all.
+  if (!isSupabaseConfigured) {
+    return (
+      <div className="mx-auto w-full max-w-sm">
+        <div className="mb-6 text-center">
+          <h1 className="text-xl font-semibold">{copy.title}</h1>
+        </div>
+        <SupabaseSetupNotice />
+        <AuthLinks mode={mode} />
+      </div>
+    );
+  }
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -159,8 +174,6 @@ export function AuthForm({ mode }: { mode: Mode }) {
     }
   };
 
-  const copy = COPY[mode];
-
   return (
     <div className="mx-auto w-full max-w-sm">
       <div className="mb-6 text-center">
@@ -246,28 +259,34 @@ export function AuthForm({ mode }: { mode: Mode }) {
         </>
       )}
 
-      <div className="mt-5 flex flex-col gap-1.5 text-center text-xs text-muted-foreground">
-        {mode === 'signin' && (
-          <>
-            <Link href="/signup" className="text-primary hover:underline">
-              حساب ندارید؟ ثبت‌نام کنید
-            </Link>
-            <Link href="/forgot-password" className="hover:underline">
-              رمز عبور را فراموش کرده‌اید؟
-            </Link>
-          </>
-        )}
-        {mode === 'signup' && (
-          <Link href="/login" className="text-primary hover:underline">
-            حساب دارید؟ وارد شوید
+      <AuthLinks mode={mode} />
+    </div>
+  );
+}
+
+function AuthLinks({ mode }: { mode: Mode }) {
+  return (
+    <div className="mt-5 flex flex-col gap-1.5 text-center text-xs text-muted-foreground">
+      {mode === 'signin' && (
+        <>
+          <Link href="/signup" className="text-primary hover:underline">
+            حساب ندارید؟ ثبت‌نام کنید
           </Link>
-        )}
-        {(mode === 'forgot' || mode === 'reset') && (
-          <Link href="/login" className="text-primary hover:underline">
-            بازگشت به ورود
+          <Link href="/forgot-password" className="hover:underline">
+            رمز عبور را فراموش کرده‌اید؟
           </Link>
-        )}
-      </div>
+        </>
+      )}
+      {mode === 'signup' && (
+        <Link href="/login" className="text-primary hover:underline">
+          حساب دارید؟ وارد شوید
+        </Link>
+      )}
+      {(mode === 'forgot' || mode === 'reset') && (
+        <Link href="/login" className="text-primary hover:underline">
+          بازگشت به ورود
+        </Link>
+      )}
     </div>
   );
 }
