@@ -75,20 +75,29 @@ export function NoteScreen({ noteId }: { noteId: string }) {
   React.useEffect(() => {
     let active = true;
     async function load() {
-      const local = await getDb().notes.get(noteId);
+      // `notes` is rewritten on every sync pull, so the note may be on the
+      // server while this device has not cached it yet.
+      const fromStore = useNotesStore.getState().notes.find((item) => item.id === noteId);
+      const local = fromStore ?? (await getDb().notes.get(noteId));
       if (!active) return;
       if (local) {
         setNote(local);
         setMissing(false);
-      } else {
-        setMissing(true);
+        return;
       }
+      // Only report a missing note once the local store is hydrated.
+      if (useNotesStore.getState().hydrated) setMissing(true);
     }
     void load();
     return () => {
       active = false;
     };
   }, [noteId, hydrated]);
+
+  const storeNote = notes.find((item) => item.id === noteId);
+  React.useEffect(() => {
+    if (storeNote) setNote(storeNote);
+  }, [storeNote]);
 
   const titleIndex = React.useMemo(
     () => buildTitleIndex(notes.filter((item) => !item.deleted_at)),
@@ -109,7 +118,7 @@ export function NoteScreen({ noteId }: { noteId: string }) {
     [router, titleIndex],
   );
 
-  if (missing) {
+  if (missing && hydrated) {
     return (
       <div className="mx-auto max-w-xl py-16 text-center">
         <h1 className="text-lg font-semibold">این یادداشت پیدا نشد</h1>
