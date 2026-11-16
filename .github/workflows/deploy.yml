@@ -20,6 +20,11 @@ jobs:
   build:
     name: Build static site
     runs-on: ubuntu-latest
+    # Declaring the environment lets this job read values that were stored at the
+    # *environment* level (Settings -> Environments -> github-pages) as well as
+    # repository-level ones. Without it, environment-scoped values are invisible.
+    environment:
+      name: github-pages
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -69,7 +74,7 @@ jobs:
           set -e
 
           if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
-            echo "::error title=Supabase values are missing::Add BOTH values under Settings -> Secrets and variables -> Actions, as repository Variables (recommended) or Secrets: NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY. Then re-run this workflow."
+            echo "::error title=Supabase values are missing::Nothing named NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY was visible to this job. Add BOTH under Settings -> Secrets and variables -> Actions -> Variables (repository scope is simplest). If you stored them under Settings -> Environments -> github-pages instead, they must be variables or secrets of that environment. Then re-run this workflow."
             exit 1
           fi
 
