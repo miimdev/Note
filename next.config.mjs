@@ -12,6 +12,13 @@ const supabaseHost = (() => {
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  // `isomorphic-dompurify` pulls jsdom into the server bundle. When webpack
+  // inlines jsdom's sync-XHR worker, that worker's 5s idle timer ends up running
+  // in the *main* process and calls process.exit(0), so `next start` silently
+  // died a few seconds after "Ready". Keeping the package external makes Node
+  // require the real module at runtime, where the worker is a separate thread.
+  serverExternalPackages: ['isomorphic-dompurify'],
+
   experimental: {
     optimizePackageImports: ['lucide-react', '@tiptap/react'],
   },
