@@ -95,7 +95,10 @@ export function useFilteredNotes(options: {
       if (folderSet && (!note.folder_id || !folderSet.has(note.folder_id))) return false;
       if (options.tagId && !(noteTags.get(note.id) ?? []).includes(options.tagId)) return false;
 
-      if (options.query.trim() && !matchesQuery({ title: note.title, text: note.content_text }, options.query)) {
+      if (
+        options.query.trim() &&
+        !matchesQuery({ title: note.title, text: note.content_text }, options.query)
+      ) {
         return false;
       }
 
@@ -138,7 +141,9 @@ export function NotesView({
 
   const base = notes
     ? notes.filter((note) =>
-        debouncedQuery.trim() ? matchesQuery({ title: note.title, text: note.content_text }, debouncedQuery) : true,
+        debouncedQuery.trim()
+          ? matchesQuery({ title: note.title, text: note.content_text }, debouncedQuery)
+          : true,
       )
     : filtered;
 

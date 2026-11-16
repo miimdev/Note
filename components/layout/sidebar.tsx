@@ -136,7 +136,12 @@ export function Sidebar() {
         className="no-print flex h-dvh w-16 shrink-0 flex-col items-center gap-2 border-e bg-card/40 py-3"
         aria-label="نوار کناری جمع‌شده"
       >
-        <Button variant="ghost" size="icon-sm" onClick={toggleSidebar} aria-label="باز کردن نوار کناری">
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          onClick={toggleSidebar}
+          aria-label="باز کردن نوار کناری"
+        >
           <PanelLeftOpen className="h-4 w-4" />
         </Button>
         <Button variant="default" size="icon-sm" onClick={handleNewNote} aria-label="یادداشت جدید">
@@ -178,7 +183,10 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="no-print flex h-dvh w-72 shrink-0 flex-col border-e bg-card/40" aria-label="نوار کناری">
+    <aside
+      className="no-print flex h-dvh w-72 shrink-0 flex-col border-e bg-card/40"
+      aria-label="نوار کناری"
+    >
       <div className="flex items-center justify-between gap-2 px-3 py-3">
         <Link href="/notes" className="flex items-center gap-2 font-semibold">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-blue-500 text-white">
@@ -196,7 +204,12 @@ export function Sidebar() {
           >
             {resolvedTheme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </Button>
-          <Button variant="ghost" size="icon-sm" onClick={toggleSidebar} aria-label="جمع کردن نوار کناری">
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={toggleSidebar}
+            aria-label="جمع کردن نوار کناری"
+          >
             <PanelLeftClose className="h-4 w-4" />
           </Button>
         </div>
@@ -242,7 +255,9 @@ export function Sidebar() {
                 aria-current={active ? 'page' : undefined}
                 className={cn(
                   'flex items-center justify-between gap-2 rounded-md px-2.5 py-1.5 text-sm transition-colors',
-                  active ? 'bg-accent font-medium text-accent-foreground' : 'text-muted-foreground hover:bg-muted',
+                  active
+                    ? 'bg-accent font-medium text-accent-foreground'
+                    : 'text-muted-foreground hover:bg-muted',
                 )}
               >
                 <span className="flex items-center gap-2">
@@ -250,7 +265,9 @@ export function Sidebar() {
                   {item.label}
                 </span>
                 {typeof count === 'number' && count > 0 && (
-                  <span className="text-xs tabular-nums text-muted-foreground">{toPersianDigits(count)}</span>
+                  <span className="text-xs tabular-nums text-muted-foreground">
+                    {toPersianDigits(count)}
+                  </span>
                 )}
               </Link>
             );
@@ -265,10 +282,19 @@ export function Sidebar() {
               aria-expanded={foldersOpen}
               className="muted-label flex items-center gap-1 hover:text-foreground"
             >
-              {foldersOpen ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
+              {foldersOpen ? (
+                <ChevronDown className="h-3 w-3" />
+              ) : (
+                <ChevronRight className="h-3 w-3" />
+              )}
               پوشه‌ها
             </button>
-            <Button variant="ghost" size="icon-sm" onClick={() => setFolderDialogOpen(true)} aria-label="پوشه جدید">
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              onClick={() => setFolderDialogOpen(true)}
+              aria-label="پوشه جدید"
+            >
               <FolderPlus className="h-3.5 w-3.5" />
             </Button>
           </div>
@@ -291,7 +317,11 @@ export function Sidebar() {
               aria-expanded={tagsOpen}
               className="muted-label flex items-center gap-1 hover:text-foreground"
             >
-              {tagsOpen ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
+              {tagsOpen ? (
+                <ChevronDown className="h-3 w-3" />
+              ) : (
+                <ChevronRight className="h-3 w-3" />
+              )}
               برچسب‌ها
             </button>
             <Button variant="ghost" size="icon-sm" asChild aria-label="مدیریت برچسب‌ها">
@@ -323,9 +353,15 @@ export function Sidebar() {
           </Button>
         </div>
         <div className="mt-1 flex flex-wrap gap-1 px-1.5 text-[10px] text-muted-foreground">
-          <span className="inline-flex items-center gap-1"><Pin className="h-3 w-3" /> سنجاق</span>
-          <span className="inline-flex items-center gap-1"><TrendingUp className="h-3 w-3" /> مرتب‌سازی</span>
-          <span className="inline-flex items-center gap-1"><FolderIcon className="h-3 w-3" /> پوشه</span>
+          <span className="inline-flex items-center gap-1">
+            <Pin className="h-3 w-3" /> سنجاق
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <TrendingUp className="h-3 w-3" /> مرتب‌سازی
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <FolderIcon className="h-3 w-3" /> پوشه
+          </span>
         </div>
       </div>
 

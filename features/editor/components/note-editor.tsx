@@ -38,9 +38,10 @@ export function NoteEditor({
   className,
 }: NoteEditorProps) {
   const [title, setTitle] = React.useState(initialTitle);
-  const [imageDialog, setImageDialog] = React.useState<{ editor: Editor; range: { from: number; to: number } } | null>(
-    null,
-  );
+  const [imageDialog, setImageDialog] = React.useState<{
+    editor: Editor;
+    range: { from: number; to: number };
+  } | null>(null);
   const autosave = useAutosave({ noteId, userId });
   const fontSize = useUiStore((state) => state.editorFontSize);
   const focusMode = useUiStore((state) => state.focusMode);
@@ -124,7 +125,10 @@ export function NoteEditor({
         </BubbleMenu>
       )}
 
-      <EditorContent editor={editor} className={cn('ProseMirror-host', compact && 'max-h-[50vh] overflow-y-auto')} />
+      <EditorContent
+        editor={editor}
+        className={cn('ProseMirror-host', compact && 'max-h-[50vh] overflow-y-auto')}
+      />
 
       <DocStats editor={editor} saveStatus={autosave.status} />
 

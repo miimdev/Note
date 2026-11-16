@@ -2,7 +2,14 @@
 
 import * as React from 'react';
 import { AlertTriangle } from 'lucide-react';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useNotesStore } from '@/store/notes-store';
 import { useSync } from './sync-provider';
@@ -40,7 +47,8 @@ export function ConflictDialog() {
             تداخل نسخه
           </DialogTitle>
           <DialogDescription>
-            این یادداشت هم روی این دستگاه و هم روی دستگاه دیگری تغییر کرده است. کدام نسخه را نگه داریم؟
+            این یادداشت هم روی این دستگاه و هم روی دستگاه دیگری تغییر کرده است. کدام نسخه را نگه
+            داریم؟
           </DialogDescription>
         </DialogHeader>
 
@@ -52,9 +60,18 @@ export function ConflictDialog() {
                 {relativeTime(conflict.local.updated_at)}
               </span>
             </h3>
-            <p className="mb-2 truncate text-xs text-muted-foreground">{conflict.local.title || 'بدون عنوان'}</p>
-            <p className="max-h-32 overflow-y-auto whitespace-pre-wrap text-xs leading-5">{localPreview || '—'}</p>
-            <Button className="mt-3 w-full" size="sm" disabled={busy} onClick={() => void resolve('local')}>
+            <p className="mb-2 truncate text-xs text-muted-foreground">
+              {conflict.local.title || 'بدون عنوان'}
+            </p>
+            <p className="max-h-32 overflow-y-auto whitespace-pre-wrap text-xs leading-5">
+              {localPreview || '—'}
+            </p>
+            <Button
+              className="mt-3 w-full"
+              size="sm"
+              disabled={busy}
+              onClick={() => void resolve('local')}
+            >
               نگه‌داشتن نسخه من
             </Button>
           </section>
@@ -66,8 +83,12 @@ export function ConflictDialog() {
                 {relativeTime(conflict.remote.updated_at)}
               </span>
             </h3>
-            <p className="mb-2 truncate text-xs text-muted-foreground">{conflict.remote.title || 'بدون عنوان'}</p>
-            <p className="max-h-32 overflow-y-auto whitespace-pre-wrap text-xs leading-5">{remotePreview || '—'}</p>
+            <p className="mb-2 truncate text-xs text-muted-foreground">
+              {conflict.remote.title || 'بدون عنوان'}
+            </p>
+            <p className="max-h-32 overflow-y-auto whitespace-pre-wrap text-xs leading-5">
+              {remotePreview || '—'}
+            </p>
             <Button
               className="mt-3 w-full"
               size="sm"

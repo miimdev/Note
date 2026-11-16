@@ -3,12 +3,7 @@ import type { Note, NoteSummary } from './database.types';
 export type SaveStatus = 'idle' | 'dirty' | 'saving' | 'saved' | 'offline' | 'error' | 'conflict';
 
 export type NoteSort =
-  | 'updated_desc'
-  | 'updated_asc'
-  | 'created_desc'
-  | 'created_asc'
-  | 'title_asc'
-  | 'title_desc';
+  'updated_desc' | 'updated_asc' | 'created_desc' | 'created_asc' | 'title_asc' | 'title_desc';
 
 export type NoteFilter = {
   query: string;
@@ -21,14 +16,7 @@ export type NoteFilter = {
 };
 
 export type NavSection =
-  | 'all'
-  | 'favorites'
-  | 'daily'
-  | 'archive'
-  | 'trash'
-  | 'folder'
-  | 'tag'
-  | 'search';
+  'all' | 'favorites' | 'daily' | 'archive' | 'trash' | 'folder' | 'tag' | 'search';
 
 export type EditorBlockType =
   | 'paragraph'

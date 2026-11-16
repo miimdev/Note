@@ -54,7 +54,9 @@ export async function GET() {
     files[path] = strToU8(docToMarkdown(note.content as NoteContent, note.title));
   }
 
-  files['backup.json'] = strToU8(JSON.stringify({ exported_at: new Date().toISOString(), notes, folders }, null, 2));
+  files['backup.json'] = strToU8(
+    JSON.stringify({ exported_at: new Date().toISOString(), notes, folders }, null, 2),
+  );
 
   const zipped = zipSync(files, { level: 6 });
   const filename = `note-backup-${new Date().toISOString().slice(0, 10)}.zip`;

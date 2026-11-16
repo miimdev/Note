@@ -40,7 +40,8 @@ export const useUiStore = create<UiState>()(
       calendar: 'jalali',
       editorFontSize: 'md',
       setSidebar: (sidebar) => set({ sidebar }),
-      toggleSidebar: () => set((state) => ({ sidebar: state.sidebar === 'expanded' ? 'collapsed' : 'expanded' })),
+      toggleSidebar: () =>
+        set((state) => ({ sidebar: state.sidebar === 'expanded' ? 'collapsed' : 'expanded' })),
       setFocusMode: (focusMode) => set({ focusMode }),
       toggleFocusMode: () => set((state) => ({ focusMode: !state.focusMode })),
       setCommandPaletteOpen: (commandPaletteOpen) => set({ commandPaletteOpen }),

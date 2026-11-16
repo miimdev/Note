@@ -38,7 +38,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const dir = locale === 'fa' ? 'rtl' : 'ltr';
 
   return (
-    <html lang={locale} dir={dir} suppressHydrationWarning className={`${vazirmatn.variable} ${inter.variable}`}>
+    <html
+      lang={locale}
+      dir={dir}
+      suppressHydrationWarning
+      className={`${vazirmatn.variable} ${inter.variable}`}
+    >
       <body className="min-h-dvh">
         <DirectionProvider dir={dir}>
           <Providers>{children}</Providers>

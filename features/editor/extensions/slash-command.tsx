@@ -36,56 +36,64 @@ const ITEMS: SlashCommandItem[] = [
     subtitle: 'عنوان بزرگ',
     keywords: ['h1', 'heading', 'تیتر', 'سرتیتر'],
     icon: Heading1,
-    command: ({ editor, range }) => editor.chain().focus().deleteRange(range).setNode('heading', { level: 1 }).run(),
+    command: ({ editor, range }) =>
+      editor.chain().focus().deleteRange(range).setNode('heading', { level: 1 }).run(),
   },
   {
     title: 'تیتر ۲',
     subtitle: 'عنوان میانی',
     keywords: ['h2', 'heading', 'تیتر'],
     icon: Heading2,
-    command: ({ editor, range }) => editor.chain().focus().deleteRange(range).setNode('heading', { level: 2 }).run(),
+    command: ({ editor, range }) =>
+      editor.chain().focus().deleteRange(range).setNode('heading', { level: 2 }).run(),
   },
   {
     title: 'تیتر ۳',
     subtitle: 'عنوان کوچک',
     keywords: ['h3', 'heading', 'تیتر'],
     icon: Heading3,
-    command: ({ editor, range }) => editor.chain().focus().deleteRange(range).setNode('heading', { level: 3 }).run(),
+    command: ({ editor, range }) =>
+      editor.chain().focus().deleteRange(range).setNode('heading', { level: 3 }).run(),
   },
   {
     title: 'لیست نقطه‌ای',
     subtitle: 'لیست بدون ترتیب',
     keywords: ['bullet', 'list', 'لیست'],
     icon: List,
-    command: ({ editor, range }) => editor.chain().focus().deleteRange(range).toggleBulletList().run(),
+    command: ({ editor, range }) =>
+      editor.chain().focus().deleteRange(range).toggleBulletList().run(),
   },
   {
     title: 'لیست شماره‌دار',
     subtitle: 'لیست مرتب',
     keywords: ['ordered', 'number', 'شماره'],
     icon: ListOrdered,
-    command: ({ editor, range }) => editor.chain().focus().deleteRange(range).toggleOrderedList().run(),
+    command: ({ editor, range }) =>
+      editor.chain().focus().deleteRange(range).toggleOrderedList().run(),
   },
   {
     title: 'چک‌لیست',
     subtitle: 'کارها با تیک',
     keywords: ['todo', 'task', 'چک', 'کار'],
     icon: CheckSquare,
-    command: ({ editor, range }) => editor.chain().focus().deleteRange(range).toggleTaskList().run(),
+    command: ({ editor, range }) =>
+      editor.chain().focus().deleteRange(range).toggleTaskList().run(),
   },
   {
     title: 'نقل‌قول',
     subtitle: 'متن برجسته',
     keywords: ['quote', 'blockquote', 'نقل'],
     icon: Quote,
-    command: ({ editor, range }) => editor.chain().focus().deleteRange(range).toggleBlockquote().run(),
+    command: ({ editor, range }) =>
+      editor.chain().focus().deleteRange(range).toggleBlockquote().run(),
   },
   {
     title: 'بلوک کد',
     subtitle: 'با رنگ‌بندی سینتکس',
     keywords: ['code', 'codeblock', 'کد'],
     icon: Code2,
-    command: ({ editor, range }) => editor.chain().focus().deleteRange(range).toggleCodeBlock().run(),
+    command: ({ editor, range }) =>
+      editor.chain().focus().deleteRange(range).toggleCodeBlock().run(),
   },
   {
     title: 'جدول',
@@ -93,14 +101,20 @@ const ITEMS: SlashCommandItem[] = [
     keywords: ['table', 'جدول'],
     icon: TableIcon,
     command: ({ editor, range }) =>
-      editor.chain().focus().deleteRange(range).insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run(),
+      editor
+        .chain()
+        .focus()
+        .deleteRange(range)
+        .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
+        .run(),
   },
   {
     title: 'جداکننده',
     subtitle: 'خط افقی',
     keywords: ['hr', 'divider', 'خط'],
     icon: Minus,
-    command: ({ editor, range }) => editor.chain().focus().deleteRange(range).setHorizontalRule().run(),
+    command: ({ editor, range }) =>
+      editor.chain().focus().deleteRange(range).setHorizontalRule().run(),
   },
   {
     title: 'تصویر',
@@ -125,7 +139,9 @@ const ITEMS: SlashCommandItem[] = [
         .chain()
         .focus()
         .deleteRange(range)
-        .insertContent(`<p><a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a></p>`)
+        .insertContent(
+          `<p><a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a></p>`,
+        )
         .run();
     },
   },
@@ -195,7 +211,11 @@ export const SlashCommand = Extension.create<SlashCommandOptions>({
             });
           },
           onUpdate: (props) => {
-            component?.updateProps({ items: props.items, command: props.command, query: props.query });
+            component?.updateProps({
+              items: props.items,
+              command: props.command,
+              query: props.query,
+            });
           },
           onKeyDown: (props) => {
             if (props.event.key === 'Escape') {

@@ -4,7 +4,13 @@ import * as React from 'react';
 import { Loader2, Sparkles, Wand2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { AI_ENABLED, runAiAction } from './ai-actions';
 
 type Action = 'summarize' | 'rewrite' | 'fix' | 'translate' | 'actions' | 'tags' | 'continue';
@@ -36,7 +42,9 @@ export function AiPanel({ text, onInsert }: { text: string; onInsert?: (value: s
       const response = await runAiAction({ action: next, text, locale: 'fa' });
       setResult(response.result);
     } catch (error) {
-      toast.error('دستیار پاسخ نداد', { description: error instanceof Error ? error.message : undefined });
+      toast.error('دستیار پاسخ نداد', {
+        description: error instanceof Error ? error.message : undefined,
+      });
     } finally {
       setBusy(false);
     }
@@ -54,7 +62,9 @@ export function AiPanel({ text, onInsert }: { text: string; onInsert?: (value: s
             <DialogTitle className="flex items-center gap-2">
               <Wand2 className="h-4 w-4" /> دستیار هوشمند
             </DialogTitle>
-            <DialogDescription>متن این یادداشت برای پردازش به سرور برنامه ارسال می‌شود.</DialogDescription>
+            <DialogDescription>
+              متن این یادداشت برای پردازش به سرور برنامه ارسال می‌شود.
+            </DialogDescription>
           </DialogHeader>
 
           <div className="flex flex-wrap gap-1.5">

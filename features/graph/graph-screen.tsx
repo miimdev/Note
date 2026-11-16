@@ -17,7 +17,14 @@ const GraphCanvas = dynamic(() => import('./graph-canvas').then((mod) => mod.Gra
 });
 
 type GraphData = {
-  nodes: { id: string; title: string; is_favorite: boolean; folder_id: string | null; updated_at: string; tag_count: number }[];
+  nodes: {
+    id: string;
+    title: string;
+    is_favorite: boolean;
+    folder_id: string | null;
+    updated_at: string;
+    tag_count: number;
+  }[];
   edges: { source: string; target: string }[];
 };
 
@@ -69,11 +76,23 @@ export function GraphScreen() {
             <Network className="h-5 w-5 text-primary" /> شبکه دانش
           </h1>
           <p className="mt-1 text-xs text-muted-foreground">
-            {data ? `${toPersianDigits(data.nodes.length)} یادداشت · ${toPersianDigits(data.edges.length)} پیوند` : 'در حال محاسبه…'}
+            {data
+              ? `${toPersianDigits(data.nodes.length)} یادداشت · ${toPersianDigits(data.edges.length)} پیوند`
+              : 'در حال محاسبه…'}
           </p>
         </div>
-        <Button variant="outline" size="sm" className="gap-1.5" onClick={() => void load()} disabled={loading}>
-          {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-1.5"
+          onClick={() => void load()}
+          disabled={loading}
+        >
+          {loading ? (
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          ) : (
+            <RefreshCw className="h-3.5 w-3.5" />
+          )}
           بازخوانی
         </Button>
       </header>
@@ -92,8 +111,8 @@ export function GraphScreen() {
           <div className="flex h-full flex-col items-center justify-center gap-2 rounded-xl border border-dashed text-center">
             <p className="text-sm font-medium">هنوز پیوندی برای نمایش نیست</p>
             <p className="max-w-sm text-xs text-muted-foreground">
-              با نوشتن <code className="rounded bg-muted px-1">[[عنوان یادداشت]]</code> در متن، یادداشت‌ها به هم وصل
-              می‌شوند و اینجا دیده می‌شوند.
+              با نوشتن <code className="rounded bg-muted px-1">[[عنوان یادداشت]]</code> در متن،
+              یادداشت‌ها به هم وصل می‌شوند و اینجا دیده می‌شوند.
             </p>
           </div>
         )}
@@ -102,7 +121,11 @@ export function GraphScreen() {
       {selectedNote && (
         <div className="flex items-center justify-between rounded-lg border bg-card px-3 py-2 text-sm">
           <span className="truncate">{selectedNote.title || 'بدون عنوان'}</span>
-          <Button size="sm" variant="outline" onClick={() => router.push(`/notes/${selectedNote.id}`)}>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => router.push(`/notes/${selectedNote.id}`)}
+          >
             باز کردن یادداشت
           </Button>
         </div>

@@ -19,7 +19,14 @@ export type GraphNode = {
 export type GraphEdge = { source: string; target: string };
 
 type Props = {
-  nodes: { id: string; title: string; is_favorite: boolean; folder_id: string | null; updated_at: string; tag_count: number }[];
+  nodes: {
+    id: string;
+    title: string;
+    is_favorite: boolean;
+    folder_id: string | null;
+    updated_at: string;
+    tag_count: number;
+  }[];
   edges: GraphEdge[];
   onSelect?: (id: string) => void;
   selectedId?: string | null;
@@ -95,9 +102,7 @@ export function GraphCanvas({ nodes: inputNodes, edges, onSelect, selectedId }: 
     const border = `hsl(${css.getPropertyValue('--border').trim() || '240 10% 90%'})`;
     const background = `hsl(${css.getPropertyValue('--background').trim() || '0 0% 100%'})`;
 
-    const edgeIndex = edges
-      .map((edge) => ({ edge, source: 0, target: 0 }))
-      .map((item) => item);
+    const edgeIndex = edges.map((edge) => ({ edge, source: 0, target: 0 })).map((item) => item);
 
     const tick = () => {
       const width = canvas.clientWidth;
@@ -171,7 +176,10 @@ export function GraphCanvas({ nodes: inputNodes, edges, onSelect, selectedId }: 
         const b = byId.get(edge.target);
         if (!a || !b) continue;
         const isHot =
-          selectedId === a.id || selectedId === b.id || hovered?.id === a.id || hovered?.id === b.id;
+          selectedId === a.id ||
+          selectedId === b.id ||
+          hovered?.id === a.id ||
+          hovered?.id === b.id;
         context.strokeStyle = isHot ? primary : border;
         context.globalAlpha = isHot ? 0.9 : 0.6;
         context.beginPath();
@@ -186,7 +194,11 @@ export function GraphCanvas({ nodes: inputNodes, edges, onSelect, selectedId }: 
         const selected = node.id === selectedId;
         context.beginPath();
         context.arc(node.x, node.y, radius, 0, Math.PI * 2);
-        context.fillStyle = node.is_favorite ? '#f59e0b' : node.id === hovered?.id || selected ? primary : muted;
+        context.fillStyle = node.is_favorite
+          ? '#f59e0b'
+          : node.id === hovered?.id || selected
+            ? primary
+            : muted;
         context.fill();
         if (selected) {
           context.strokeStyle = primary;
@@ -198,7 +210,8 @@ export function GraphCanvas({ nodes: inputNodes, edges, onSelect, selectedId }: 
           context.fillStyle = muted;
           context.font = '11px Vazirmatn, system-ui, sans-serif';
           context.textAlign = 'center';
-          const label = node.title.length > 22 ? `${node.title.slice(0, 21)}…` : node.title || 'بدون عنوان';
+          const label =
+            node.title.length > 22 ? `${node.title.slice(0, 21)}…` : node.title || 'بدون عنوان';
           context.fillText(label, node.x, node.y + radius + 13);
         }
       }
@@ -235,7 +248,7 @@ export function GraphCanvas({ nodes: inputNodes, edges, onSelect, selectedId }: 
     <div className="relative h-full w-full">
       <canvas
         ref={canvasRef}
-        className="h-full w-full cursor-grab rounded-xl border bg-card touch-none active:cursor-grabbing"
+        className="h-full w-full cursor-grab touch-none rounded-xl border bg-card active:cursor-grabbing"
         role="img"
         aria-label="نمای گراف ارتباط یادداشت‌ها"
         onMouseMove={(event) => {
@@ -275,10 +288,20 @@ export function GraphCanvas({ nodes: inputNodes, edges, onSelect, selectedId }: 
       />
 
       <div className="absolute bottom-2 end-3 flex items-center gap-1.5 rounded-lg border bg-background/90 p-1 text-[11px] shadow-sm backdrop-blur">
-        <button type="button" onClick={() => setZoom((value) => Math.min(value + 0.2, 2))} className="px-1.5" aria-label="بزرگ‌نمایی">
+        <button
+          type="button"
+          onClick={() => setZoom((value) => Math.min(value + 0.2, 2))}
+          className="px-1.5"
+          aria-label="بزرگ‌نمایی"
+        >
           +
         </button>
-        <button type="button" onClick={() => setZoom((value) => Math.max(value - 0.2, 0.6))} className="px-1.5" aria-label="کوچک‌نمایی">
+        <button
+          type="button"
+          onClick={() => setZoom((value) => Math.max(value - 0.2, 0.6))}
+          className="px-1.5"
+          aria-label="کوچک‌نمایی"
+        >
           −
         </button>
         <button
@@ -293,7 +316,9 @@ export function GraphCanvas({ nodes: inputNodes, edges, onSelect, selectedId }: 
       {hovered && (
         <div className="pointer-events-none absolute start-3 top-3 max-w-[16rem] rounded-lg border bg-background/95 px-2.5 py-1.5 text-xs shadow-sm backdrop-blur">
           <p className="truncate font-medium">{hovered.title || 'بدون عنوان'}</p>
-          <p className="text-muted-foreground">{hovered.degree} پیوند · {hovered.tag_count} برچسب</p>
+          <p className="text-muted-foreground">
+            {hovered.degree} پیوند · {hovered.tag_count} برچسب
+          </p>
         </div>
       )}
     </div>

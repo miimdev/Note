@@ -67,8 +67,18 @@ export function EditorToolbar({ editor }: { editor: Editor }) {
       },
     ],
     [
-      { label: 'ضخیم', icon: Bold, active: editor.isActive('bold'), onClick: () => chain().toggleBold().run() },
-      { label: 'کج', icon: Italic, active: editor.isActive('italic'), onClick: () => chain().toggleItalic().run() },
+      {
+        label: 'ضخیم',
+        icon: Bold,
+        active: editor.isActive('bold'),
+        onClick: () => chain().toggleBold().run(),
+      },
+      {
+        label: 'کج',
+        icon: Italic,
+        active: editor.isActive('italic'),
+        onClick: () => chain().toggleItalic().run(),
+      },
       {
         label: 'زیرخط',
         icon: UnderlineIcon,
@@ -131,7 +141,10 @@ export function EditorToolbar({ editor }: { editor: Editor }) {
       className="no-print flex flex-wrap items-center gap-1 rounded-lg border bg-card/60 p-1"
     >
       {groups.map((group, groupIndex) => (
-        <div key={groupIndex} className="flex items-center gap-0.5 border-e pe-1 last:border-e-0 last:pe-0">
+        <div
+          key={groupIndex}
+          className="flex items-center gap-0.5 border-e pe-1 last:border-e-0 last:pe-0"
+        >
           {group.map((action) => {
             const Icon = action.icon;
             return (

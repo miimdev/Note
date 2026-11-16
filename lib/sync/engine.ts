@@ -147,7 +147,9 @@ export class SyncEngine {
           if (item.attempts + 1 >= 5) {
             await db.outbox.delete(item.id!);
           } else {
-            await new Promise((resolve) => setTimeout(resolve, Math.min(backoffDelay(item.attempts), 4000)));
+            await new Promise((resolve) =>
+              setTimeout(resolve, Math.min(backoffDelay(item.attempts), 4000)),
+            );
           }
         }
       }
@@ -245,13 +247,20 @@ export class SyncEngine {
         'postgres_changes',
         { event: '*', schema: 'public', table: 'notes', filter: `user_id=eq.${this.userId}` },
         (payload) => {
-          void this.handleRemoteNote(payload.eventType, payload.new as Note, payload.old as Partial<Note>);
+          void this.handleRemoteNote(
+            payload.eventType,
+            payload.new as Note,
+            payload.old as Partial<Note>,
+          );
         },
       )
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'folders', filter: `user_id=eq.${this.userId}` },
-        () => void pullFolders(this.client, this.userId).then((folders) => useNotesStore.getState().setFolders(folders)),
+        () =>
+          void pullFolders(this.client, this.userId).then((folders) =>
+            useNotesStore.getState().setFolders(folders),
+          ),
       )
       .on(
         'postgres_changes',

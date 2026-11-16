@@ -32,7 +32,15 @@ export const EN_MONTHS = [
   'Dec',
 ] as const;
 
-export const FA_WEEKDAYS = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه'] as const;
+export const FA_WEEKDAYS = [
+  'شنبه',
+  'یکشنبه',
+  'دوشنبه',
+  'سه‌شنبه',
+  'چهارشنبه',
+  'پنجشنبه',
+  'جمعه',
+] as const;
 
 export function toDate(value: string | Date): Date {
   return value instanceof Date ? value : new Date(value);
@@ -44,7 +52,9 @@ export function toPersianDigits(input: string | number): string {
 }
 
 export function toLatinDigits(input: string): string {
-  return input.replace(/[۰-۹]/g, (d) => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d))).replace(/[٠-٩]/g, (d) => String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)));
+  return input
+    .replace(/[۰-۹]/g, (d) => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d)))
+    .replace(/[٠-٩]/g, (d) => String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)));
 }
 
 export function pad2(n: number): string {

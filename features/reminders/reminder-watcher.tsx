@@ -29,7 +29,8 @@ export function ReminderWatcher() {
       const db = getDb();
       const now = Date.now();
       const due = (await db.reminders.toArray()).filter(
-        (reminder) => !reminder.is_done && !reminder.fired_at && new Date(reminder.remind_at).getTime() <= now,
+        (reminder) =>
+          !reminder.is_done && !reminder.fired_at && new Date(reminder.remind_at).getTime() <= now,
       );
 
       for (const reminder of due) {
@@ -39,15 +40,25 @@ export function ReminderWatcher() {
         const note = notes.find((item) => item.id === reminder.note_id);
         const title = note?.title || 'یادآور یادداشت';
 
-        await showLocalNotification(title, 'زمان یادآوری این یادداشت رسید.', `/notes/${reminder.note_id}`);
+        await showLocalNotification(
+          title,
+          'زمان یادآوری این یادداشت رسید.',
+          `/notes/${reminder.note_id}`,
+        );
         toast(title, {
           description: 'زمان یادآوری رسید',
           action: { label: 'بازکردن', onClick: () => router.push(`/notes/${reminder.note_id}`) },
         });
 
-        await db.reminders.update(reminder.id, { is_done: true, fired_at: new Date().toISOString() });
+        await db.reminders.update(reminder.id, {
+          is_done: true,
+          fired_at: new Date().toISOString(),
+        });
         const client = getSupabaseBrowserClient();
-        await client.from('reminders').update({ is_done: true, fired_at: new Date().toISOString() }).eq('id', reminder.id);
+        await client
+          .from('reminders')
+          .update({ is_done: true, fired_at: new Date().toISOString() })
+          .eq('id', reminder.id);
       }
     };
 

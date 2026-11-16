@@ -61,10 +61,12 @@ export function SyncProvider({ children }: { children: React.ReactNode }) {
       setUser(session?.user ?? null);
       setReady(true);
 
-      const { data } = client.auth.onAuthStateChange((_event: string, nextSession: { user: User | null } | null) => {
-        setUser(nextSession?.user ?? null);
-        if (!nextSession?.user) useNotesStore.getState().reset();
-      });
+      const { data } = client.auth.onAuthStateChange(
+        (_event: string, nextSession: { user: User | null } | null) => {
+          setUser(nextSession?.user ?? null);
+          if (!nextSession?.user) useNotesStore.getState().reset();
+        },
+      );
       unsubscribe = () => data.subscription.unsubscribe();
     }
 
@@ -88,7 +90,9 @@ export function SyncProvider({ children }: { children: React.ReactNode }) {
 
     const store = useNotesStore.getState();
     store.setNotes(notes);
-    store.setFolders(folders.sort((a, b) => a.position - b.position || a.name.localeCompare(b.name, 'fa')));
+    store.setFolders(
+      folders.sort((a, b) => a.position - b.position || a.name.localeCompare(b.name, 'fa')),
+    );
     store.setTags(tags);
     store.setTemplates(templates);
 

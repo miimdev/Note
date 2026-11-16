@@ -15,7 +15,12 @@ export function useFolderActions() {
   const setFolders = useNotesStore((state) => state.setFolders);
 
   const createFolder = React.useCallback(
-    async (input: { name: string; parentId?: string | null; color?: string | null; icon?: string | null }) => {
+    async (input: {
+      name: string;
+      parentId?: string | null;
+      color?: string | null;
+      icon?: string | null;
+    }) => {
       if (!userId) return null;
       const client = getSupabaseBrowserClient();
       const payload = {
@@ -45,7 +50,12 @@ export function useFolderActions() {
   const renameFolder = React.useCallback(
     async (folder: Folder, name: string) => {
       const client = getSupabaseBrowserClient();
-      const { data, error } = await client.from('folders').update({ name }).eq('id', folder.id).select('*').single();
+      const { data, error } = await client
+        .from('folders')
+        .update({ name })
+        .eq('id', folder.id)
+        .select('*')
+        .single();
       if (error) {
         toast.error('تغییر نام ناموفق بود', { description: error.message });
         return;
@@ -58,7 +68,9 @@ export function useFolderActions() {
 
   const removeFolder = React.useCallback(
     async (folder: Folder) => {
-      const confirmed = window.confirm(`پوشه «${folder.name}» حذف شود؟ یادداشت‌ها به سطل زباله نمی‌روند، فقط بدون پوشه می‌شوند.`);
+      const confirmed = window.confirm(
+        `پوشه «${folder.name}» حذف شود؟ یادداشت‌ها به سطل زباله نمی‌روند، فقط بدون پوشه می‌شوند.`,
+      );
       if (!confirmed) return;
 
       const client = getSupabaseBrowserClient();
@@ -81,7 +93,10 @@ export function useFolderActions() {
       const slug = slugify(name);
       const { data, error } = await client
         .from('tags')
-        .upsert({ user_id: userId, name: name.trim(), slug, color: color ?? null }, { onConflict: 'user_id,slug' })
+        .upsert(
+          { user_id: userId, name: name.trim(), slug, color: color ?? null },
+          { onConflict: 'user_id,slug' },
+        )
         .select('*')
         .single();
       if (error) return null;

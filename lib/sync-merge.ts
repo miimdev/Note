@@ -29,7 +29,8 @@ export function mergeNote({ local, remote, baseVersion }: MergeInput): MergeOutc
 
   if (!local.dirty) return { kind: 'remote-newer', reason: 'local-clean' };
 
-  const remoteMoved = typeof baseVersion === 'number' ? remote.version > baseVersion : remote.version > local.version;
+  const remoteMoved =
+    typeof baseVersion === 'number' ? remote.version > baseVersion : remote.version > local.version;
 
   if (!remoteMoved) {
     return { kind: 'local-newer', reason: 'remote-unchanged' };

@@ -2,7 +2,16 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { BookOpen, Calendar, CheckSquare, LayoutTemplate, Loader2, Plus, Rocket, Trash2 } from 'lucide-react';
+import {
+  BookOpen,
+  Calendar,
+  CheckSquare,
+  LayoutTemplate,
+  Loader2,
+  Plus,
+  Rocket,
+  Trash2,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import type { Template } from '@/types/database.types';
 import { useNotesStore } from '@/store/notes-store';
@@ -11,7 +20,14 @@ import { useNoteActions } from '@/features/notes/use-note-actions';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { getDb } from '@/lib/db/local-db';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { docToText, emptyDoc } from '@/lib/editor/content';
@@ -53,7 +69,13 @@ export function TemplatesScreen() {
       const content = emptyDoc();
       const { data, error } = await client
         .from('templates')
-        .insert({ user_id: userId, name: name.trim(), content, icon: 'layout-template', position: templates.length })
+        .insert({
+          user_id: userId,
+          name: name.trim(),
+          content,
+          icon: 'layout-template',
+          position: templates.length,
+        })
         .select('*')
         .single();
       if (error) throw error;
@@ -63,7 +85,9 @@ export function TemplatesScreen() {
       setCreateOpen(false);
       toast.success('قالب ساخته شد', { description: 'برای ویرایش محتوا، یادداشتی از آن بسازید.' });
     } catch (error) {
-      toast.error('ساخت قالب ناموفق بود', { description: error instanceof Error ? error.message : undefined });
+      toast.error('ساخت قالب ناموفق بود', {
+        description: error instanceof Error ? error.message : undefined,
+      });
     } finally {
       setSaving(false);
     }
@@ -87,7 +111,9 @@ export function TemplatesScreen() {
       <header className="flex flex-wrap items-center justify-between gap-2">
         <div>
           <h1 className="text-xl font-semibold tracking-tight">قالب‌ها</h1>
-          <p className="mt-1 text-sm text-muted-foreground">با یک کلیک، ساختار آماده را به یادداشت تبدیل کنید.</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            با یک کلیک، ساختار آماده را به یادداشت تبدیل کنید.
+          </p>
         </div>
         <Button onClick={() => setCreateOpen(true)} className="gap-1.5">
           <Plus className="h-4 w-4" /> قالب شخصی
@@ -98,14 +124,19 @@ export function TemplatesScreen() {
         {templates.map((template) => {
           const Icon = ICONS[template.icon ?? ''] ?? LayoutTemplate;
           return (
-            <article key={template.id} className="group flex flex-col gap-2 rounded-xl border bg-card p-4">
+            <article
+              key={template.id}
+              className="group flex flex-col gap-2 rounded-xl border bg-card p-4"
+            >
               <div className="flex items-start justify-between">
                 <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
                   <Icon className="h-4 w-4" />
                 </span>
                 <div className="flex items-center gap-1">
                   {template.is_system && (
-                    <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">سیستمی</span>
+                    <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">
+                      سیستمی
+                    </span>
                   )}
                   {!template.is_system && (
                     <Button
@@ -142,11 +173,18 @@ export function TemplatesScreen() {
         <DialogContent className="max-w-sm">
           <DialogHeader>
             <DialogTitle>قالب جدید</DialogTitle>
-            <DialogDescription>یک نام بگذارید؛ بعداً می‌توانید یادداشتی از آن بسازید و محتوا را ویرایش کنید.</DialogDescription>
+            <DialogDescription>
+              یک نام بگذارید؛ بعداً می‌توانید یادداشتی از آن بسازید و محتوا را ویرایش کنید.
+            </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="template-name">نام قالب</Label>
-            <Input id="template-name" value={name} onChange={(event) => setName(event.target.value)} maxLength={120} />
+            <Input
+              id="template-name"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              maxLength={120}
+            />
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setCreateOpen(false)}>

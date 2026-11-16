@@ -6,7 +6,13 @@ import { toast } from 'sonner';
 import type { NoteVersion } from '@/types/database.types';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { formatJalaliDateTime, relativeTime } from '@/lib/jalali';
 import { docToText } from '@/lib/editor/content';
 import { useNoteActions } from '@/features/notes/use-note-actions';
@@ -66,7 +72,12 @@ export function VersionsPanel({ noteId }: Props) {
         <span className="flex items-center gap-1.5">
           <History className="h-3.5 w-3.5" /> تاریخچه ({versions.length})
         </span>
-        <Button variant="ghost" size="sm" className="h-6 px-1.5 text-[11px]" onClick={() => void load()}>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-6 px-1.5 text-[11px]"
+          onClick={() => void load()}
+        >
           بازخوانی
         </Button>
       </h3>
@@ -85,7 +96,9 @@ export function VersionsPanel({ noteId }: Props) {
                 className="flex w-full items-center justify-between gap-2 rounded-md px-1.5 py-1 text-start text-xs hover:bg-accent"
               >
                 <span className="truncate">{version.title || 'بدون عنوان'}</span>
-                <span className="shrink-0 text-[10px] text-muted-foreground">v{version.version} · {relativeTime(version.created_at)}</span>
+                <span className="shrink-0 text-[10px] text-muted-foreground">
+                  v{version.version} · {relativeTime(version.created_at)}
+                </span>
               </button>
             </li>
           ))}
@@ -121,10 +134,23 @@ export function VersionsPanel({ noteId }: Props) {
           </div>
 
           <div className="flex flex-wrap gap-2">
-            <Button size="sm" variant="outline" onClick={() => setComparing(comparing ? null : versions.find((v) => v.id !== selected?.id) ?? null)}>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() =>
+                setComparing(
+                  comparing ? null : (versions.find((v) => v.id !== selected?.id) ?? null),
+                )
+              }
+            >
               {comparing ? 'بستن مقایسه' : 'مقایسه با نسخه قبلی'}
             </Button>
-            <Button size="sm" className="gap-1.5" disabled={restoring} onClick={() => selected && void restore(selected)}>
+            <Button
+              size="sm"
+              className="gap-1.5"
+              disabled={restoring}
+              onClick={() => selected && void restore(selected)}
+            >
               <RotateCcw className="h-3.5 w-3.5" /> بازیابی این نسخه
             </Button>
           </div>

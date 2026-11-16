@@ -52,7 +52,10 @@ export async function POST(request: Request) {
   }
 
   if (rateLimited(user.id)) {
-    return NextResponse.json({ error: 'تعداد درخواست‌ها زیاد است؛ کمی بعد امتحان کنید' }, { status: 429 });
+    return NextResponse.json(
+      { error: 'تعداد درخواست‌ها زیاد است؛ کمی بعد امتحان کنید' },
+      { status: 429 },
+    );
   }
 
   let body: unknown;
@@ -64,7 +67,10 @@ export async function POST(request: Request) {
 
   const parsed = aiActionSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.issues[0]?.message ?? 'ورودی نامعتبر' }, { status: 400 });
+    return NextResponse.json(
+      { error: parsed.error.issues[0]?.message ?? 'ورودی نامعتبر' },
+      { status: 400 },
+    );
   }
 
   const { action, text } = parsed.data;

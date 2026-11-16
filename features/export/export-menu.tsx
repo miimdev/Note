@@ -33,7 +33,9 @@ export function ExportMenu({
       await exportAllAsZip();
       toast.success('فایل zip ساخته شد');
     } catch (error) {
-      toast.error('ساخت zip ناموفق بود', { description: error instanceof Error ? error.message : undefined });
+      toast.error('ساخت zip ناموفق بود', {
+        description: error instanceof Error ? error.message : undefined,
+      });
     } finally {
       setBusy(false);
     }
@@ -58,7 +60,11 @@ export function ExportMenu({
         </DropdownMenuItem>
         {withZip && (
           <DropdownMenuItem disabled={busy} onSelect={() => void runZip()}>
-            {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileArchive className="h-4 w-4" />}
+            {busy ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <FileArchive className="h-4 w-4" />
+            )}
             همه یادداشت‌ها (zip)
           </DropdownMenuItem>
         )}

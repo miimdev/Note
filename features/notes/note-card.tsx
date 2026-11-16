@@ -39,30 +39,46 @@ type Props = {
 };
 
 export const NoteCard = React.memo(function NoteCard({ note, query = '', tagNames = [] }: Props) {
-  const { togglePinned, toggleFavorite, archiveNote, trashNote, restoreNote, duplicateNote, moveNote, deleteForever } =
-    useNoteActions();
+  const {
+    togglePinned,
+    toggleFavorite,
+    archiveNote,
+    trashNote,
+    restoreNote,
+    duplicateNote,
+    moveNote,
+    deleteForever,
+  } = useNoteActions();
   const folders = useNotesStore((state) => state.folders);
   const trashMode = Boolean(note.deleted_at);
   const archiveMode = note.is_archived && !trashMode;
 
-  const folderName = note.folder_id ? folders.find((folder) => folder.id === note.folder_id)?.name : null;
+  const folderName = note.folder_id
+    ? folders.find((folder) => folder.id === note.folder_id)?.name
+    : null;
   const preview = note.content_text.replace(/\[\[|\]\]/g, '').slice(0, 200);
 
   return (
     <article
       className={cn(
-        'group relative flex flex-col gap-2 rounded-xl border bg-card p-3.5 transition-all hover:border-primary/40 hover:shadow-sm focus-within:border-primary/50',
+        'group relative flex flex-col gap-2 rounded-xl border bg-card p-3.5 transition-all focus-within:border-primary/50 hover:border-primary/40 hover:shadow-sm',
         note.is_pinned && 'border-primary/30 bg-primary/[0.03]',
       )}
     >
       <div className="flex items-start gap-2">
-        <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-muted text-sm" aria-hidden>
+        <span
+          className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-muted text-sm"
+          aria-hidden
+        >
           {note.icon ? note.icon : <FileText className="h-3.5 w-3.5 text-muted-foreground" />}
         </span>
 
         <div className="min-w-0 flex-1">
           <h3 className="truncate text-sm font-semibold">
-            <Link href={trashMode ? '#' : `/notes/${note.id}`} className="outline-none after:absolute after:inset-0">
+            <Link
+              href={trashMode ? '#' : `/notes/${note.id}`}
+              className="outline-none after:absolute after:inset-0"
+            >
               {note.title ? <HighlightText text={note.title} query={query} /> : 'بدون عنوان'}
             </Link>
           </h3>
@@ -72,7 +88,9 @@ export const NoteCard = React.memo(function NoteCard({ note, query = '', tagName
         </div>
 
         <div className="relative z-10 flex items-center gap-0.5">
-          {note.is_favorite && <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" aria-label="علاقه‌مندی" />}
+          {note.is_favorite && (
+            <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" aria-label="علاقه‌مندی" />
+          )}
           {note.is_pinned && <Pin className="h-3.5 w-3.5 text-primary" aria-label="سنجاق‌شده" />}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -101,10 +119,15 @@ export const NoteCard = React.memo(function NoteCard({ note, query = '', tagName
                     {note.is_pinned ? 'برداشتن سنجاق' : 'سنجاق کردن'}
                   </DropdownMenuItem>
                   <DropdownMenuItem onSelect={() => void toggleFavorite(note.id)}>
-                    <Star className="h-4 w-4" /> {note.is_favorite ? 'حذف از علاقه‌مندی' : 'افزودن به علاقه‌مندی'}
+                    <Star className="h-4 w-4" />{' '}
+                    {note.is_favorite ? 'حذف از علاقه‌مندی' : 'افزودن به علاقه‌مندی'}
                   </DropdownMenuItem>
                   <DropdownMenuItem onSelect={() => void archiveNote(note.id, !archiveMode)}>
-                    {archiveMode ? <ArchiveRestore className="h-4 w-4" /> : <Archive className="h-4 w-4" />}
+                    {archiveMode ? (
+                      <ArchiveRestore className="h-4 w-4" />
+                    ) : (
+                      <Archive className="h-4 w-4" />
+                    )}
                     {archiveMode ? 'خروج از آرشیو' : 'آرشیو'}
                   </DropdownMenuItem>
                   <DropdownMenuItem onSelect={() => void duplicateNote(note.id)}>
@@ -115,10 +138,15 @@ export const NoteCard = React.memo(function NoteCard({ note, query = '', tagName
                       <FolderInput className="h-4 w-4" /> انتقال به پوشه
                     </DropdownMenuSubTrigger>
                     <DropdownMenuSubContent className="max-h-64 overflow-y-auto">
-                      <DropdownMenuItem onSelect={() => void moveNote(note.id, null)}>بدون پوشه</DropdownMenuItem>
+                      <DropdownMenuItem onSelect={() => void moveNote(note.id, null)}>
+                        بدون پوشه
+                      </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       {folders.map((folder) => (
-                        <DropdownMenuItem key={folder.id} onSelect={() => void moveNote(note.id, folder.id)}>
+                        <DropdownMenuItem
+                          key={folder.id}
+                          onSelect={() => void moveNote(note.id, folder.id)}
+                        >
                           {folder.name}
                         </DropdownMenuItem>
                       ))}

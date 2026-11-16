@@ -26,7 +26,12 @@ export function OfflineBanner() {
           : 'آفلاین هستید — تغییرات ذخیره می‌شوند و بعد از اتصال همگام می‌شوند'}
       </span>
       {online && pending > 0 && (
-        <Button size="sm" variant="ghost" className="h-6 gap-1 text-xs" onClick={() => void engine?.sync()}>
+        <Button
+          size="sm"
+          variant="ghost"
+          className="h-6 gap-1 text-xs"
+          onClick={() => void engine?.sync()}
+        >
           <RefreshCw className="h-3 w-3" /> همگام‌سازی
         </Button>
       )}

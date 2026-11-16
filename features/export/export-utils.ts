@@ -26,11 +26,19 @@ export function safeFileName(title: string, fallback = 'note'): string {
 }
 
 export function exportMarkdown(title: string, content: NoteContent) {
-  downloadBlob(docToMarkdown(content, title), `${safeFileName(title)}.md`, 'text/markdown;charset=utf-8');
+  downloadBlob(
+    docToMarkdown(content, title),
+    `${safeFileName(title)}.md`,
+    'text/markdown;charset=utf-8',
+  );
 }
 
 /** Standalone, print-ready HTML with RTL styles and no external assets. */
-export function buildStandaloneHtml(title: string, content: NoteContent, meta?: { author?: string; date?: string }) {
+export function buildStandaloneHtml(
+  title: string,
+  content: NoteContent,
+  meta?: { author?: string; date?: string },
+) {
   const body = sanitizeHtml(docToHtml(content));
   return `<!doctype html>
 <html lang="fa" dir="rtl">
@@ -68,11 +76,19 @@ export function buildStandaloneHtml(title: string, content: NoteContent, meta?: 
 }
 
 export function exportHtml(title: string, content: NoteContent) {
-  downloadBlob(buildStandaloneHtml(title, content), `${safeFileName(title)}.html`, 'text/html;charset=utf-8');
+  downloadBlob(
+    buildStandaloneHtml(title, content),
+    `${safeFileName(title)}.html`,
+    'text/html;charset=utf-8',
+  );
 }
 
 export function exportPdf(title: string, noteId: string) {
-  const printWindow = window.open(`/print/${noteId}?auto=1`, '_blank', 'noopener,width=900,height=1200');
+  const printWindow = window.open(
+    `/print/${noteId}?auto=1`,
+    '_blank',
+    'noopener,width=900,height=1200',
+  );
   if (!printWindow) {
     window.location.href = `/print/${noteId}`;
     return;
@@ -81,7 +97,9 @@ export function exportPdf(title: string, noteId: string) {
 }
 
 export function escape(value: string): string {
-  return value.replace(/[&<>"']/g, (char) =>
-    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char] ?? char,
+  return value.replace(
+    /[&<>"']/g,
+    (char) =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char] ?? char,
   );
 }

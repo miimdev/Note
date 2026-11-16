@@ -34,7 +34,9 @@ export function NoteTagEditor({ noteId }: { noteId: string }) {
       setNoteTags(map);
       await getDb().noteTags.put({ note_id: noteId, tag_id: tag.id, user_id: userId });
       const client = getSupabaseBrowserClient();
-      const { error } = await client.from('note_tags').insert({ note_id: noteId, tag_id: tag.id, user_id: userId });
+      const { error } = await client
+        .from('note_tags')
+        .insert({ note_id: noteId, tag_id: tag.id, user_id: userId });
       if (error && !error.message.includes('duplicate')) toast.error('افزودن برچسب ناموفق بود');
     },
     [activeIds, noteId, noteTags, setNoteTags, userId],
@@ -62,7 +64,10 @@ export function NoteTagEditor({ noteId }: { noteId: string }) {
       const color = TAG_COLORS[tags.length % TAG_COLORS.length];
       const { data, error } = await client
         .from('tags')
-        .upsert({ user_id: userId, name, slug: slugify(name), color }, { onConflict: 'user_id,slug' })
+        .upsert(
+          { user_id: userId, name, slug: slugify(name), color },
+          { onConflict: 'user_id,slug' },
+        )
         .select('*')
         .single();
       if (error) throw error;
@@ -96,12 +101,18 @@ export function NoteTagEditor({ noteId }: { noteId: string }) {
             style={tag.color ? { borderColor: `${tag.color}55`, color: tag.color } : undefined}
           >
             {tag.name}
-            <button type="button" onClick={() => void detach(tag.id)} aria-label={`حذف برچسب ${tag.name}`}>
+            <button
+              type="button"
+              onClick={() => void detach(tag.id)}
+              aria-label={`حذف برچسب ${tag.name}`}
+            >
               <X className="h-3 w-3" />
             </button>
           </span>
         ))}
-        {activeTags.length === 0 && <span className="text-xs text-muted-foreground">بدون برچسب</span>}
+        {activeTags.length === 0 && (
+          <span className="text-xs text-muted-foreground">بدون برچسب</span>
+        )}
       </div>
 
       <div className="flex gap-1.5">
@@ -126,7 +137,13 @@ export function NoteTagEditor({ noteId }: { noteId: string }) {
               <option key={tag.id} value={tag.name} />
             ))}
         </datalist>
-        <Button size="icon-sm" variant="outline" onClick={() => void createAndAttach()} disabled={busy || !value.trim()} aria-label="افزودن">
+        <Button
+          size="icon-sm"
+          variant="outline"
+          onClick={() => void createAndAttach()}
+          disabled={busy || !value.trim()}
+          aria-label="افزودن"
+        >
           <Plus className="h-3.5 w-3.5" />
         </Button>
       </div>

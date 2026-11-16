@@ -23,7 +23,9 @@ export function TagList({ tags }: { tags: Tag[] }) {
               href={href}
               className={cn(
                 'inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] transition-colors',
-                active ? 'border-primary bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted',
+                active
+                  ? 'border-primary bg-primary/10 text-primary'
+                  : 'text-muted-foreground hover:bg-muted',
               )}
             >
               <span

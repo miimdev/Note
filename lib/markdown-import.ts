@@ -24,7 +24,11 @@ function parseInline(text: string): NoteNode[] {
     const link = /^\[([^\]]+)\]\(([^)\s]+)\)/.exec(rest);
     if (link) {
       flush();
-      nodes.push({ type: 'text', text: link[1] ?? '', marks: [{ type: 'link', attrs: { href: link[2] } }] });
+      nodes.push({
+        type: 'text',
+        text: link[1] ?? '',
+        marks: [{ type: 'link', attrs: { href: link[2] } }],
+      });
       i += link[0].length;
       continue;
     }
@@ -147,9 +151,16 @@ export function markdownToDoc(markdown: string): NoteContent {
 
     if (/^\s*[-*+]\s+/.test(line)) {
       const items: NoteNode[] = [];
-      while (i < lines.length && /^\s*[-*+]\s+/.test(lines[i] ?? '') && !/^\s*[-*+]\s+\[[ xX]\]\s+/.test(lines[i] ?? '')) {
+      while (
+        i < lines.length &&
+        /^\s*[-*+]\s+/.test(lines[i] ?? '') &&
+        !/^\s*[-*+]\s+\[[ xX]\]\s+/.test(lines[i] ?? '')
+      ) {
         const itemText = (lines[i] ?? '').replace(/^\s*[-*+]\s+/, '');
-        items.push({ type: 'listItem', content: [{ type: 'paragraph', content: parseInline(itemText) }] });
+        items.push({
+          type: 'listItem',
+          content: [{ type: 'paragraph', content: parseInline(itemText) }],
+        });
         i += 1;
       }
       content.push({ type: 'bulletList', content: items });
@@ -160,7 +171,10 @@ export function markdownToDoc(markdown: string): NoteContent {
       const items: NoteNode[] = [];
       while (i < lines.length && /^\s*\d+[.)]\s+/.test(lines[i] ?? '')) {
         const itemText = (lines[i] ?? '').replace(/^\s*\d+[.)]\s+/, '');
-        items.push({ type: 'listItem', content: [{ type: 'paragraph', content: parseInline(itemText) }] });
+        items.push({
+          type: 'listItem',
+          content: [{ type: 'paragraph', content: parseInline(itemText) }],
+        });
         i += 1;
       }
       content.push({ type: 'orderedList', content: items });
@@ -175,7 +189,11 @@ export function markdownToDoc(markdown: string): NoteContent {
     }
 
     const paragraphLines: string[] = [];
-    while (i < lines.length && (lines[i] ?? '').trim() && !/^(#{1,6}\s|```|>|\s*[-*+]\s|\s*\d+[.)]\s)/.test(lines[i] ?? '')) {
+    while (
+      i < lines.length &&
+      (lines[i] ?? '').trim() &&
+      !/^(#{1,6}\s|```|>|\s*[-*+]\s|\s*\d+[.)]\s)/.test(lines[i] ?? '')
+    ) {
       paragraphLines.push(lines[i] ?? '');
       i += 1;
     }
@@ -186,7 +204,10 @@ export function markdownToDoc(markdown: string): NoteContent {
 }
 
 /** Splits an imported markdown file into a title (first H1) and the body. */
-export function splitMarkdownTitle(markdown: string, fallback: string): { title: string; body: string } {
+export function splitMarkdownTitle(
+  markdown: string,
+  fallback: string,
+): { title: string; body: string } {
   const match = /^#\s+(.+)$/m.exec(markdown);
   if (!match) return { title: fallback, body: markdown };
   return {

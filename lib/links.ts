@@ -46,10 +46,10 @@ export function replaceLinkTitle(doc: NoteContent, from: string, to: string): No
   const clone = structuredClone(doc);
   const walk = (node: { content?: unknown[]; text?: string }) => {
     if (typeof node.text === 'string') {
-      node.text = node.text.split('[[').join('[[').replace(
-        new RegExp(`\\[\\[${escapeRegExp(from)}\\]\\]`, 'g'),
-        `[[${to}]]`,
-      );
+      node.text = node.text
+        .split('[[')
+        .join('[[')
+        .replace(new RegExp(`\\[\\[${escapeRegExp(from)}\\]\\]`, 'g'), `[[${to}]]`);
     }
     if (Array.isArray(node.content)) {
       for (const child of node.content) walk(child as { content?: unknown[]; text?: string });

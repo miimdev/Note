@@ -6,13 +6,24 @@ import { toast } from 'sonner';
 import type { SharedNote } from '@/types/database.types';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { formatJalaliDate } from '@/lib/jalali';
 
-type Props = { noteId: string; userId: string; open: boolean; onOpenChange: (open: boolean) => void };
+type Props = {
+  noteId: string;
+  userId: string;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+};
 
 const EXPIRY_OPTIONS = [
   { value: 'never', label: 'بدون انقضا' },
@@ -52,9 +63,13 @@ export function ShareDialog({ noteId, userId, open, onOpenChange }: Props) {
     setCreating(true);
     try {
       const client = getSupabaseBrowserClient();
-      const token = Array.from(crypto.getRandomValues(new Uint8Array(18)), (byte) => byte.toString(16).padStart(2, '0')).join('');
+      const token = Array.from(crypto.getRandomValues(new Uint8Array(18)), (byte) =>
+        byte.toString(16).padStart(2, '0'),
+      ).join('');
       const expiresAt =
-        expiry === 'never' ? null : new Date(Date.now() + Number(expiry) * 86_400_000).toISOString();
+        expiry === 'never'
+          ? null
+          : new Date(Date.now() + Number(expiry) * 86_400_000).toISOString();
 
       const { data, error } = await client
         .from('shared_notes')
@@ -77,7 +92,10 @@ export function ShareDialog({ noteId, userId, open, onOpenChange }: Props) {
 
   const revoke = async (share: SharedNote) => {
     const client = getSupabaseBrowserClient();
-    const { error } = await client.from('shared_notes').update({ is_active: false }).eq('id', share.id);
+    const { error } = await client
+      .from('shared_notes')
+      .update({ is_active: false })
+      .eq('id', share.id);
     if (error) {
       toast.error('لغو لینک ناموفق بود');
       return;
@@ -123,13 +141,19 @@ export function ShareDialog({ noteId, userId, open, onOpenChange }: Props) {
           <div className="flex items-center justify-between rounded-md border p-2.5">
             <div>
               <p className="text-sm">فقط‌خواندنی</p>
-              <p className="text-[11px] text-muted-foreground">این گزینه همیشه فعال است (امنیت پیش‌فرض).</p>
+              <p className="text-[11px] text-muted-foreground">
+                این گزینه همیشه فعال است (امنیت پیش‌فرض).
+              </p>
             </div>
             <Switch checked={withPasswordless} disabled aria-label="فقط خواندنی" />
           </div>
 
           <Button onClick={() => void createShare()} disabled={creating} className="gap-1.5">
-            {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Link2 className="h-4 w-4" />}
+            {creating ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Link2 className="h-4 w-4" />
+            )}
             ساخت لینک جدید
           </Button>
 
@@ -150,14 +174,26 @@ export function ShareDialog({ noteId, userId, open, onOpenChange }: Props) {
                   </p>
                   <p className="mt-0.5 text-[10px] text-muted-foreground">
                     {share.is_active ? 'فعال' : 'غیرفعال'}
-                    {share.expires_at ? ` · تا ${formatJalaliDate(share.expires_at)}` : ' · بدون انقضا'}
+                    {share.expires_at
+                      ? ` · تا ${formatJalaliDate(share.expires_at)}`
+                      : ' · بدون انقضا'}
                   </p>
                 </div>
-                <Button size="icon-sm" variant="ghost" onClick={() => void copy(share.token)} aria-label="کپی لینک">
+                <Button
+                  size="icon-sm"
+                  variant="ghost"
+                  onClick={() => void copy(share.token)}
+                  aria-label="کپی لینک"
+                >
                   <Copy className="h-3.5 w-3.5" />
                 </Button>
                 {share.is_active && (
-                  <Button size="icon-sm" variant="ghost" onClick={() => void revoke(share)} aria-label="لغو لینک">
+                  <Button
+                    size="icon-sm"
+                    variant="ghost"
+                    onClick={() => void revoke(share)}
+                    aria-label="لغو لینک"
+                  >
                     <Trash2 className="h-3.5 w-3.5 text-destructive" />
                   </Button>
                 )}

@@ -81,7 +81,10 @@ export function NotesFilterBar({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start">
             <DropdownMenuLabel>مرتب‌سازی</DropdownMenuLabel>
-            <DropdownMenuRadioGroup value={sort} onValueChange={(value) => onSortChange(value as NoteSort)}>
+            <DropdownMenuRadioGroup
+              value={sort}
+              onValueChange={(value) => onSortChange(value as NoteSort)}
+            >
               {Object.entries(SORT_LABELS).map(([value, label]) => (
                 <DropdownMenuRadioItem key={value} value={value}>
                   {label}
@@ -89,22 +92,35 @@ export function NotesFilterBar({
               ))}
             </DropdownMenuRadioGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuCheckboxItem checked={favoritesOnly} onCheckedChange={(value) => onFavoritesChange(Boolean(value))}>
+            <DropdownMenuCheckboxItem
+              checked={favoritesOnly}
+              onCheckedChange={(value) => onFavoritesChange(Boolean(value))}
+            >
               <Star className="me-1.5 h-3.5 w-3.5" /> فقط علاقه‌مندی‌ها
             </DropdownMenuCheckboxItem>
-            <DropdownMenuCheckboxItem checked={showArchived} onCheckedChange={(value) => onShowArchivedChange(Boolean(value))}>
+            <DropdownMenuCheckboxItem
+              checked={showArchived}
+              onCheckedChange={(value) => onShowArchivedChange(Boolean(value))}
+            >
               <Archive className="me-1.5 h-3.5 w-3.5" /> نمایش آرشیو
             </DropdownMenuCheckboxItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <div className="ms-auto flex items-center rounded-md border p-0.5" role="group" aria-label="نمای فهرست">
+        <div
+          className="ms-auto flex items-center rounded-md border p-0.5"
+          role="group"
+          aria-label="نمای فهرست"
+        >
           <button
             type="button"
             aria-label="نمای شبکه‌ای"
             aria-pressed={view === 'grid'}
             onClick={() => onViewChange('grid')}
-            className={cn('rounded p-1.5', view === 'grid' ? 'bg-accent text-accent-foreground' : 'text-muted-foreground')}
+            className={cn(
+              'rounded p-1.5',
+              view === 'grid' ? 'bg-accent text-accent-foreground' : 'text-muted-foreground',
+            )}
           >
             <LayoutGrid className="h-3.5 w-3.5" />
           </button>
@@ -113,7 +129,10 @@ export function NotesFilterBar({
             aria-label="نمای فهرست"
             aria-pressed={view === 'list'}
             onClick={() => onViewChange('list')}
-            className={cn('rounded p-1.5', view === 'list' ? 'bg-accent text-accent-foreground' : 'text-muted-foreground')}
+            className={cn(
+              'rounded p-1.5',
+              view === 'list' ? 'bg-accent text-accent-foreground' : 'text-muted-foreground',
+            )}
           >
             <List className="h-3.5 w-3.5" />
           </button>

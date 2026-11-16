@@ -4,7 +4,16 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { useQuery } from '@tanstack/react-query';
-import { Download, Keyboard, LogOut, MonitorSmartphone, Moon, Sun, Trash2, UserRound } from 'lucide-react';
+import {
+  Download,
+  Keyboard,
+  LogOut,
+  MonitorSmartphone,
+  Moon,
+  Sun,
+  Trash2,
+  UserRound,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { useSync } from '@/features/sync/sync-provider';
@@ -82,7 +91,9 @@ export function SettingsScreen() {
       toast.success('پروفایل ذخیره شد');
       if (locale !== profile?.locale) router.refresh();
     } catch (error) {
-      toast.error('ذخیره ناموفق بود', { description: error instanceof Error ? error.message : undefined });
+      toast.error('ذخیره ناموفق بود', {
+        description: error instanceof Error ? error.message : undefined,
+      });
     } finally {
       setSaving(false);
     }
@@ -90,7 +101,9 @@ export function SettingsScreen() {
 
   const wipeLocal = async () => {
     if (
-      !window.confirm('همه داده‌های محلی (آفلاین) پاک شود؟ داده‌های سرور دست‌نخورده می‌مانند و دوباره همگام می‌شوند.')
+      !window.confirm(
+        'همه داده‌های محلی (آفلاین) پاک شود؟ داده‌های سرور دست‌نخورده می‌مانند و دوباره همگام می‌شوند.',
+      )
     ) {
       return;
     }
@@ -113,7 +126,13 @@ export function SettingsScreen() {
         <div className="flex flex-col gap-3">
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="email">ایمیل</Label>
-            <Input id="email" value={user?.email ?? ''} readOnly dir="ltr" className="bg-muted/50" />
+            <Input
+              id="email"
+              value={user?.email ?? ''}
+              readOnly
+              dir="ltr"
+              className="bg-muted/50"
+            />
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="flex flex-col gap-1.5">
@@ -138,7 +157,11 @@ export function SettingsScreen() {
               </select>
             </div>
           </div>
-          <Button onClick={() => void saveProfile()} disabled={saving || !signedIn} className="w-fit">
+          <Button
+            onClick={() => void saveProfile()}
+            disabled={saving || !signedIn}
+            className="w-fit"
+          >
             ذخیره پروفایل
           </Button>
         </div>
@@ -195,7 +218,10 @@ export function SettingsScreen() {
               type="button"
               onClick={() => setCalendar('gregorian')}
               aria-pressed={calendar === 'gregorian'}
-              className={cn('rounded px-2 py-1', calendar === 'gregorian' && 'bg-accent font-medium')}
+              className={cn(
+                'rounded px-2 py-1',
+                calendar === 'gregorian' && 'bg-accent font-medium',
+              )}
             >
               میلادی
             </button>
@@ -207,7 +233,9 @@ export function SettingsScreen() {
         <div className="flex items-center justify-between gap-3">
           <div>
             <p className="text-sm">جهت خودکار هر بلاک</p>
-            <p className="text-xs text-muted-foreground">جهت متن بر اساس زبان همان بلاک تعیین می‌شود.</p>
+            <p className="text-xs text-muted-foreground">
+              جهت متن بر اساس زبان همان بلاک تعیین می‌شود.
+            </p>
           </div>
           <Switch checked disabled aria-label="RTL خودکار" />
         </div>
@@ -225,10 +253,18 @@ export function SettingsScreen() {
           <Button variant="outline" onClick={() => void exportAllAsZip()} className="gap-1.5">
             <Download className="h-4 w-4" /> خروجی zip
           </Button>
-          <Button variant="outline" className="gap-1.5" onClick={() => void requestNotificationPermission()}>
+          <Button
+            variant="outline"
+            className="gap-1.5"
+            onClick={() => void requestNotificationPermission()}
+          >
             فعال‌سازی اعلان مرورگر
           </Button>
-          <Button variant="outline" className="gap-1.5 text-destructive" onClick={() => void wipeLocal()}>
+          <Button
+            variant="outline"
+            className="gap-1.5 text-destructive"
+            onClick={() => void wipeLocal()}
+          >
             <Trash2 className="h-4 w-4" /> پاک‌سازی داده محلی
           </Button>
         </div>
@@ -249,7 +285,11 @@ export function SettingsScreen() {
       </section>
 
       <section className="surface p-4">
-        <Button variant="outline" className="gap-1.5 text-destructive" onClick={() => void signOut()}>
+        <Button
+          variant="outline"
+          className="gap-1.5 text-destructive"
+          onClick={() => void signOut()}
+        >
           <LogOut className="h-4 w-4" /> خروج از حساب
         </Button>
       </section>

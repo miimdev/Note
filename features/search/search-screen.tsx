@@ -155,7 +155,9 @@ export function SearchScreen() {
               <p className="mt-1 line-clamp-2 text-xs leading-5 text-muted-foreground">
                 <HighlightText text={result.snippet} query={query} />
               </p>
-              <p className="mt-1 text-[10px] text-muted-foreground">{relativeTime(result.updated_at)}</p>
+              <p className="mt-1 text-[10px] text-muted-foreground">
+                {relativeTime(result.updated_at)}
+              </p>
             </Link>
           </li>
         ))}

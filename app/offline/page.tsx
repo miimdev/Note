@@ -12,7 +12,8 @@ export default function OfflinePage() {
       <div>
         <h1 className="text-lg font-semibold">اتصال اینترنت قطع است</h1>
         <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-          یادداشت‌های ذخیره‌شده روی این دستگاه در دسترس هستند. تغییرات بعد از وصل شدن اینترنت خودکار همگام می‌شوند.
+          یادداشت‌های ذخیره‌شده روی این دستگاه در دسترس هستند. تغییرات بعد از وصل شدن اینترنت خودکار
+          همگام می‌شوند.
         </p>
       </div>
       <Link href="/notes" className="text-sm text-primary underline-offset-4 hover:underline">

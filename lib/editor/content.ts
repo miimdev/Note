@@ -210,9 +210,7 @@ export function docToMarkdown(doc: NoteContent | null | undefined, title = ''): 
         return `${indent}- [${checked ? 'x' : ' '}] ${inner.trim()}`;
       }
       case 'blockquote':
-        return (node.content ?? [])
-          .map((child) => `> ${renderNode(child, depth)}`)
-          .join('\n');
+        return (node.content ?? []).map((child) => `> ${renderNode(child, depth)}`).join('\n');
       case 'codeBlock': {
         const code = (node.content ?? []).map((child) => child.text ?? '').join('');
         return `\`\`\`\n${code}\n\`\`\``;
@@ -248,6 +246,9 @@ export function isEmptyDoc(doc: NoteContent | null | undefined): boolean {
 
 /** First meaningful line of the note, used as a title fallback. */
 export function deriveTitle(doc: NoteContent | null | undefined, max = 80): string {
-  const text = docToText(doc).split('\n').find((line) => line.trim().length > 0) ?? '';
+  const text =
+    docToText(doc)
+      .split('\n')
+      .find((line) => line.trim().length > 0) ?? '';
   return text.length > max ? `${text.slice(0, max - 1).trimEnd()}…` : text;
 }

@@ -14,7 +14,10 @@ export function EditorStats({ text }: { text: string }) {
   const minutes = readingTimeMinutes(words, 'fa');
 
   return (
-    <div className="no-print flex flex-wrap gap-3 text-[11px] text-muted-foreground/80" aria-live="off">
+    <div
+      className="no-print flex flex-wrap gap-3 text-[11px] text-muted-foreground/80"
+      aria-live="off"
+    >
       <span>{toPersianDigits(words)} کلمه</span>
       <span>{toPersianDigits(chars)} کاراکتر</span>
       <span>~{toPersianDigits(minutes)} دقیقه</span>

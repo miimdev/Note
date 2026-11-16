@@ -9,7 +9,12 @@ import { getSupabaseBrowserClient, isSupabaseConfigured } from '@/lib/supabase/c
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { signInSchema, signUpSchema, forgotPasswordSchema, resetPasswordSchema } from '@/lib/validation/schemas';
+import {
+  signInSchema,
+  signUpSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
+} from '@/lib/validation/schemas';
 import { SupabaseSetupNotice } from './setup-notice';
 
 type Mode = 'signin' | 'signup' | 'forgot' | 'reset';
@@ -61,7 +66,8 @@ export function AuthForm({ mode }: { mode: Mode }) {
     try {
       if (mode === 'signin') {
         const parsed = signInSchema.safeParse({ email, password });
-        if (!parsed.success) throw new Error(parsed.error.issues[0]?.message ?? 'ورودی نامعتبر است');
+        if (!parsed.success)
+          throw new Error(parsed.error.issues[0]?.message ?? 'ورودی نامعتبر است');
 
         const { error: signInError } = await client.auth.signInWithPassword({ email, password });
         if (signInError) throw signInError;
@@ -70,7 +76,8 @@ export function AuthForm({ mode }: { mode: Mode }) {
         router.refresh();
       } else if (mode === 'signup') {
         const parsed = signUpSchema.safeParse({ email, password, displayName });
-        if (!parsed.success) throw new Error(parsed.error.issues[0]?.message ?? 'ورودی نامعتبر است');
+        if (!parsed.success)
+          throw new Error(parsed.error.issues[0]?.message ?? 'ورودی نامعتبر است');
 
         const { data, error: signUpError } = await client.auth.signUp({
           email,
@@ -91,7 +98,8 @@ export function AuthForm({ mode }: { mode: Mode }) {
         }
       } else if (mode === 'forgot') {
         const parsed = forgotPasswordSchema.safeParse({ email });
-        if (!parsed.success) throw new Error(parsed.error.issues[0]?.message ?? 'ایمیل نامعتبر است');
+        if (!parsed.success)
+          throw new Error(parsed.error.issues[0]?.message ?? 'ایمیل نامعتبر است');
 
         const { error: resetError } = await client.auth.resetPasswordForEmail(email, {
           redirectTo: `${siteUrl}/callback?next=/reset-password`,
@@ -100,7 +108,8 @@ export function AuthForm({ mode }: { mode: Mode }) {
         toast.success('لینک بازیابی ارسال شد', { description: 'صندوق ایمیل خود را ببینید.' });
       } else {
         const parsed = resetPasswordSchema.safeParse({ password, confirmPassword });
-        if (!parsed.success) throw new Error(parsed.error.issues[0]?.message ?? 'ورودی نامعتبر است');
+        if (!parsed.success)
+          throw new Error(parsed.error.issues[0]?.message ?? 'ورودی نامعتبر است');
 
         const { error: updateError } = await client.auth.updateUser({ password });
         if (updateError) throw updateError;
@@ -109,7 +118,9 @@ export function AuthForm({ mode }: { mode: Mode }) {
       }
     } catch (submitError) {
       const message =
-        submitError instanceof Error ? translateAuthError(submitError.message) : 'خطای نامشخص رخ داد';
+        submitError instanceof Error
+          ? translateAuthError(submitError.message)
+          : 'خطای نامشخص رخ داد';
       setError(message);
       toast.error(message);
     } finally {
@@ -177,12 +188,22 @@ export function AuthForm({ mode }: { mode: Mode }) {
         {mode === 'reset' && (
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="confirmPassword">تکرار رمز عبور</Label>
-            <Input id="confirmPassword" name="confirmPassword" type="password" dir="ltr" minLength={8} required />
+            <Input
+              id="confirmPassword"
+              name="confirmPassword"
+              type="password"
+              dir="ltr"
+              minLength={8}
+              required
+            />
           </div>
         )}
 
         {error && (
-          <p role="alert" className="rounded-md bg-destructive/10 px-3 py-2 text-xs text-destructive">
+          <p
+            role="alert"
+            className="rounded-md bg-destructive/10 px-3 py-2 text-xs text-destructive"
+          >
             {error}
           </p>
         )}
@@ -200,7 +221,13 @@ export function AuthForm({ mode }: { mode: Mode }) {
             یا
             <span className="h-px flex-1 bg-border" />
           </div>
-          <Button type="button" variant="outline" className="w-full" onClick={handleGoogle} disabled={loading}>
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            onClick={handleGoogle}
+            disabled={loading}
+          >
             <GoogleIcon /> ادامه با گوگل
           </Button>
         </>

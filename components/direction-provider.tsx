@@ -6,7 +6,13 @@ type Direction = 'rtl' | 'ltr';
 
 const DirectionContext = React.createContext<Direction>('rtl');
 
-export function DirectionProvider({ dir, children }: { dir: Direction; children: React.ReactNode }) {
+export function DirectionProvider({
+  dir,
+  children,
+}: {
+  dir: Direction;
+  children: React.ReactNode;
+}) {
   return <DirectionContext.Provider value={dir}>{children}</DirectionContext.Provider>;
 }
 

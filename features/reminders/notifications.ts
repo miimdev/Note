@@ -8,7 +8,11 @@ export async function requestNotificationPermission(): Promise<boolean> {
   return result === 'granted';
 }
 
-export async function showLocalNotification(title: string, body: string, url = '/reminders'): Promise<void> {
+export async function showLocalNotification(
+  title: string,
+  body: string,
+  url = '/reminders',
+): Promise<void> {
   if (typeof window === 'undefined' || !('Notification' in window)) return;
 
   if (Notification.permission === 'granted') {

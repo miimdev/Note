@@ -39,17 +39,20 @@ import { ExportMenu } from '@/features/export/export-menu';
 import { AiPanel } from '@/features/ai/ai-panel';
 import { cn } from '@/lib/utils';
 
-const NoteEditor = dynamic(() => import('@/features/editor/components/note-editor').then((mod) => mod.NoteEditor), {
-  ssr: false,
-  loading: () => (
-    <div className="flex flex-col gap-3">
-      <Skeleton className="h-9 w-2/3" />
-      <Skeleton className="h-4 w-full" />
-      <Skeleton className="h-4 w-5/6" />
-      <Skeleton className="h-64 w-full" />
-    </div>
-  ),
-});
+const NoteEditor = dynamic(
+  () => import('@/features/editor/components/note-editor').then((mod) => mod.NoteEditor),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex flex-col gap-3">
+        <Skeleton className="h-9 w-2/3" />
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-5/6" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    ),
+  },
+);
 
 type PanelTab = 'links' | 'tags' | 'versions';
 
@@ -136,7 +139,12 @@ export function NoteScreen({ noteId }: { noteId: string }) {
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-4">
-      <div className={cn('no-print flex flex-wrap items-center gap-2', focusMode && 'opacity-30 hover:opacity-100')}>
+      <div
+        className={cn(
+          'no-print flex flex-wrap items-center gap-2',
+          focusMode && 'opacity-30 hover:opacity-100',
+        )}
+      >
         <Button asChild variant="ghost" size="sm" className="gap-1">
           <Link href="/notes">
             <ArrowRight className="h-3.5 w-3.5" /> یادداشت‌ها
@@ -157,7 +165,9 @@ export function NoteScreen({ noteId }: { noteId: string }) {
                 aria-pressed={note.is_favorite}
                 onClick={() => void toggleFavorite(noteId)}
               >
-                <Star className={cn('h-4 w-4', note.is_favorite && 'fill-amber-400 text-amber-400')} />
+                <Star
+                  className={cn('h-4 w-4', note.is_favorite && 'fill-amber-400 text-amber-400')}
+                />
               </Button>
               <Button
                 size="icon-sm"
@@ -167,14 +177,21 @@ export function NoteScreen({ noteId }: { noteId: string }) {
               >
                 <Bell className="h-4 w-4" />
               </Button>
-              <Button size="sm" variant="ghost" className="gap-1.5" onClick={() => setShareOpen(true)}>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="gap-1.5"
+                onClick={() => setShareOpen(true)}
+              >
                 <Globe className="h-3.5 w-3.5" /> اشتراک
               </Button>
               <ExportMenu noteId={noteId} title={note.title} content={content} />
               <AiPanel
                 text={docToText(content)}
                 onInsert={(value) => {
-                  void navigator.clipboard.writeText(value).then(() => toast.success('نتیجه در کلیپ‌بورد کپی شد'));
+                  void navigator.clipboard
+                    .writeText(value)
+                    .then(() => toast.success('نتیجه در کلیپ‌بورد کپی شد'));
                 }}
               />
               <Button
@@ -192,9 +209,18 @@ export function NoteScreen({ noteId }: { noteId: string }) {
                 aria-label={panelOpen ? 'بستن پنل کنار' : 'باز کردن پنل کنار'}
                 onClick={() => setPanelOpen((value) => !value)}
               >
-                {panelOpen ? <PanelRightClose className="h-4 w-4" /> : <PanelRightOpen className="h-4 w-4" />}
+                {panelOpen ? (
+                  <PanelRightClose className="h-4 w-4" />
+                ) : (
+                  <PanelRightOpen className="h-4 w-4" />
+                )}
               </Button>
-              <Button size="icon-sm" variant="ghost" aria-label="حذف" onClick={() => void trashNote(noteId)}>
+              <Button
+                size="icon-sm"
+                variant="ghost"
+                aria-label="حذف"
+                onClick={() => void trashNote(noteId)}
+              >
                 <Trash2 className="h-4 w-4" />
               </Button>
             </>
@@ -222,7 +248,10 @@ export function NoteScreen({ noteId }: { noteId: string }) {
         </div>
 
         {panelOpen && !focusMode && (
-          <aside className="no-print hidden w-72 shrink-0 flex-col gap-5 border-s ps-4 lg:flex" aria-label="پنل اطلاعات">
+          <aside
+            className="no-print hidden w-72 shrink-0 flex-col gap-5 border-s ps-4 lg:flex"
+            aria-label="پنل اطلاعات"
+          >
             <div className="flex gap-1 rounded-lg bg-muted p-0.5 text-xs" role="tablist">
               {[
                 { id: 'links' as const, label: 'پیوندها', icon: Link2 },
@@ -238,7 +267,9 @@ export function NoteScreen({ noteId }: { noteId: string }) {
                     onClick={() => setTab(item.id)}
                     className={cn(
                       'flex flex-1 items-center justify-center gap-1 rounded-md px-2 py-1.5 transition-colors',
-                      tab === item.id ? 'bg-background font-medium shadow-sm' : 'text-muted-foreground',
+                      tab === item.id
+                        ? 'bg-background font-medium shadow-sm'
+                        : 'text-muted-foreground',
                     )}
                   >
                     <Icon className="h-3.5 w-3.5" />
@@ -260,14 +291,26 @@ export function NoteScreen({ noteId }: { noteId: string }) {
             <div className="mt-auto flex flex-col gap-1.5 text-[11px] text-muted-foreground">
               <span>نسخه {note.version}</span>
               <span>آخرین ویرایش محلی: {new Date(note.updated_at).toLocaleString('fa-IR')}</span>
-              {note.dirty ? <span className="text-amber-600">تغییرات در انتظار همگام‌سازی</span> : null}
+              {note.dirty ? (
+                <span className="text-amber-600">تغییرات در انتظار همگام‌سازی</span>
+              ) : null}
             </div>
           </aside>
         )}
       </div>
 
-      <ShareDialog noteId={noteId} userId={userId ?? ''} open={shareOpen} onOpenChange={setShareOpen} />
-      <ReminderDialog noteId={noteId} noteTitle={note.title} open={reminderOpen} onOpenChange={setReminderOpen} />
+      <ShareDialog
+        noteId={noteId}
+        userId={userId ?? ''}
+        open={shareOpen}
+        onOpenChange={setShareOpen}
+      />
+      <ReminderDialog
+        noteId={noteId}
+        noteTitle={note.title}
+        open={reminderOpen}
+        onOpenChange={setReminderOpen}
+      />
 
       {typeof navigator !== 'undefined' && !navigator.onLine && (
         <p className="no-print flex items-center gap-1.5 text-[11px] text-muted-foreground">

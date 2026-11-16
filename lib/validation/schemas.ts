@@ -2,11 +2,7 @@ import { z } from 'zod';
 
 export const uuidSchema = z.string().uuid();
 
-export const emailSchema = z
-  .string()
-  .trim()
-  .min(1, 'ایمیل لازم است')
-  .email('ایمیل معتبر نیست');
+export const emailSchema = z.string().trim().min(1, 'ایمیل لازم است').email('ایمیل معتبر نیست');
 
 export const passwordSchema = z
   .string()

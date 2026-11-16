@@ -9,7 +9,7 @@ export function SupabaseSetupNotice() {
         <code className="rounded bg-muted px-1">.env.local</code> کپی کنید و مقادیر زیر را پر کنید:
       </p>
       <pre className="mt-3 overflow-x-auto rounded-lg bg-muted p-3 text-xs" dir="ltr">
-{`NEXT_PUBLIC_SUPABASE_URL=...
+        {`NEXT_PUBLIC_SUPABASE_URL=...
 NEXT_PUBLIC_SUPABASE_ANON_KEY=...`}
       </pre>
       <p className="mt-3 text-xs text-muted-foreground">

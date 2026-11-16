@@ -3,7 +3,15 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ChevronDown, ChevronRight, Folder as FolderIcon, MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react';
+import {
+  ChevronDown,
+  ChevronRight,
+  Folder as FolderIcon,
+  MoreHorizontal,
+  Pencil,
+  Plus,
+  Trash2,
+} from 'lucide-react';
 import type { Folder } from '@/types/database.types';
 import { cn } from '@/lib/utils';
 import { toPersianDigits } from '@/lib/jalali';
@@ -18,7 +26,13 @@ import { RenameFolderDialog } from './rename-folder-dialog';
 
 export type FolderNode = Folder & { children: FolderNode[] };
 
-export function FolderTree({ nodes, counts }: { nodes: FolderNode[]; counts: Map<string, number> }) {
+export function FolderTree({
+  nodes,
+  counts,
+}: {
+  nodes: FolderNode[];
+  counts: Map<string, number>;
+}) {
   const pathname = usePathname();
   const { removeFolder } = useFolderActions();
   const [renaming, setRenaming] = React.useState<Folder | null>(null);
@@ -77,13 +91,27 @@ function FolderBranch({
           aria-label={open ? 'بستن پوشه' : 'باز کردن پوشه'}
           className={cn('p-0.5 text-muted-foreground', !hasChildren && 'invisible')}
         >
-          {open ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
+          {open ? (
+            <ChevronDown className="h-3.5 w-3.5" />
+          ) : (
+            <ChevronRight className="h-3.5 w-3.5" />
+          )}
         </button>
         <Link href={href} className="flex min-w-0 flex-1 items-center gap-1.5 py-1.5">
-          <FolderIcon className="h-4 w-4 shrink-0" style={node.color ? { color: node.color } : undefined} />
-          <span className="truncate">{node.icon ? `${node.icon} ` : ''}{node.name}</span>
+          <FolderIcon
+            className="h-4 w-4 shrink-0"
+            style={node.color ? { color: node.color } : undefined}
+          />
+          <span className="truncate">
+            {node.icon ? `${node.icon} ` : ''}
+            {node.name}
+          </span>
         </Link>
-        {count > 0 && <span className="text-xs tabular-nums text-muted-foreground">{toPersianDigits(count)}</span>}
+        {count > 0 && (
+          <span className="text-xs tabular-nums text-muted-foreground">
+            {toPersianDigits(count)}
+          </span>
+        )}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button

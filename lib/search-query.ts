@@ -4,15 +4,15 @@
  */
 
 const CHAR_MAP: Record<string, string> = {
-  'ي': 'ی',
-  'ك': 'ک',
-  'ة': 'ه',
-  'ۀ': 'ه',
-  'أ': 'ا',
-  'إ': 'ا',
-  'آ': 'ا',
-  'ؤ': 'و',
-  'ئ': 'ی',
+  ي: 'ی',
+  ك: 'ک',
+  ة: 'ه',
+  ۀ: 'ه',
+  أ: 'ا',
+  إ: 'ا',
+  آ: 'ا',
+  ؤ: 'و',
+  ئ: 'ی',
 };
 
 const DIACRITICS = /[\u064B-\u065F\u0670\u0640\u200c]/g;
@@ -76,8 +76,13 @@ export function matchesQuery(haystack: { title: string; text: string }, query: s
   return tokens.every((token) => {
     if (title.includes(token) || text.includes(token)) return true;
     if (token.length < 4) return false;
+    const maxDistance = token.length > 6 ? 2 : 1;
     const words = `${title} ${text}`.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
-    return words.some((word) => levenshtein(word, token, token.length > 6 ? 2 : 1) <= 2);
+    return words.some((word) => {
+      // Only compare words of a similar length: avoids matching unrelated terms.
+      if (Math.abs(word.length - token.length) > maxDistance) return false;
+      return levenshtein(word, token, maxDistance) <= maxDistance;
+    });
   });
 }
 

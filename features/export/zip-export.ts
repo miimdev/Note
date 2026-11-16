@@ -42,5 +42,9 @@ export async function exportAllAsZip(): Promise<void> {
   );
 
   const zipped = zipSync(files, { level: 6 });
-  downloadBlob(zipped, `note-backup-${new Date().toISOString().slice(0, 10)}.zip`, 'application/zip');
+  downloadBlob(
+    zipped,
+    `note-backup-${new Date().toISOString().slice(0, 10)}.zip`,
+    'application/zip',
+  );
 }

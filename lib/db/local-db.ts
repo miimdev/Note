@@ -34,7 +34,8 @@ class NoteDatabase extends Dexie {
     super('note-smart-notebook');
 
     this.version(1).stores({
-      notes: 'id, user_id, folder_id, updated_at, title, is_pinned, is_favorite, is_archived, deleted_at, daily_date, dirty',
+      notes:
+        'id, user_id, folder_id, updated_at, title, is_pinned, is_favorite, is_archived, deleted_at, daily_date, dirty',
       folders: 'id, user_id, parent_id, position',
       tags: 'id, user_id, slug',
       noteTags: '[note_id+tag_id], note_id, tag_id, user_id',
@@ -88,7 +89,17 @@ export async function clearUserData(): Promise<void> {
   const db = getDb();
   await db.transaction(
     'rw',
-    [db.notes, db.folders, db.tags, db.noteTags, db.versions, db.reminders, db.templates, db.outbox, db.meta],
+    [
+      db.notes,
+      db.folders,
+      db.tags,
+      db.noteTags,
+      db.versions,
+      db.reminders,
+      db.templates,
+      db.outbox,
+      db.meta,
+    ],
     async () => {
       await Promise.all([
         db.notes.clear(),

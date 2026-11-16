@@ -35,7 +35,10 @@ export function TagsManager() {
     const client = getSupabaseBrowserClient();
     const { data, error } = await client
       .from('tags')
-      .upsert({ user_id: userId, name: name.trim(), slug: slugify(name), color }, { onConflict: 'user_id,slug' })
+      .upsert(
+        { user_id: userId, name: name.trim(), slug: slugify(name), color },
+        { onConflict: 'user_id,slug' },
+      )
       .select('*')
       .single();
 
@@ -66,7 +69,9 @@ export function TagsManager() {
     <div className="flex flex-col gap-5">
       <div>
         <h1 className="text-xl font-semibold tracking-tight">برچسب‌ها</h1>
-        <p className="mt-1 text-sm text-muted-foreground">برچسب‌های رنگی برای دسته‌بندی سریع یادداشت‌ها.</p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          برچسب‌های رنگی برای دسته‌بندی سریع یادداشت‌ها.
+        </p>
       </div>
 
       <form onSubmit={create} className="flex flex-wrap items-end gap-2">
@@ -74,7 +79,12 @@ export function TagsManager() {
           <label htmlFor="tag-name" className="text-xs text-muted-foreground">
             نام برچسب
           </label>
-          <Input id="tag-name" value={name} onChange={(event) => setName(event.target.value)} maxLength={60} />
+          <Input
+            id="tag-name"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            maxLength={60}
+          />
         </div>
         <div className="flex gap-1">
           {TAG_COLORS.map((option) => (
@@ -85,7 +95,10 @@ export function TagsManager() {
               aria-label={`رنگ ${option}`}
               aria-pressed={color === option}
               className="h-7 w-7 rounded-full border-2"
-              style={{ backgroundColor: option, borderColor: color === option ? 'currentColor' : 'transparent' }}
+              style={{
+                backgroundColor: option,
+                borderColor: color === option ? 'currentColor' : 'transparent',
+              }}
             />
           ))}
         </div>
@@ -112,8 +125,15 @@ export function TagsManager() {
               <Link href={`/tags/${tag.slug}`} className="flex-1 truncate text-sm hover:underline">
                 {tag.name}
               </Link>
-              <span className="text-xs text-muted-foreground">{counts.get(tag.id) ?? 0} یادداشت</span>
-              <Button size="icon-sm" variant="ghost" onClick={() => void remove(tag.id)} aria-label={`حذف ${tag.name}`}>
+              <span className="text-xs text-muted-foreground">
+                {counts.get(tag.id) ?? 0} یادداشت
+              </span>
+              <Button
+                size="icon-sm"
+                variant="ghost"
+                onClick={() => void remove(tag.id)}
+                aria-label={`حذف ${tag.name}`}
+              >
                 <Trash2 className="h-3.5 w-3.5 text-destructive" />
               </Button>
             </li>

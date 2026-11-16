@@ -7,7 +7,15 @@ import { Button } from '@/components/ui/button';
 import { useNotesStore } from '@/store/notes-store';
 import { useNoteActions } from '@/features/notes/use-note-actions';
 import { useUiStore } from '@/store/ui-store';
-import { formatDailyTitle, formatJalaliDate, isoToday, jalaliWeekdayLabel, toGregorian, toJalali, formatGregorianDate } from '@/lib/jalali';
+import {
+  formatDailyTitle,
+  formatJalaliDate,
+  isoToday,
+  jalaliWeekdayLabel,
+  toGregorian,
+  toJalali,
+  formatGregorianDate,
+} from '@/lib/jalali';
 import { toPersianDigits } from '@/lib/jalali';
 import { NoteEditor } from '@/features/editor/components/note-editor';
 import { useSync } from '@/features/sync/sync-provider';
@@ -23,7 +31,8 @@ export function DailyScreen() {
   const [date, setDate] = React.useState(isoToday());
   const [creating, setCreating] = React.useState(false);
 
-  const title = calendar === 'jalali' ? formatDailyTitle(date, 'jalali') : formatDailyTitle(date, 'gregorian');
+  const title =
+    calendar === 'jalali' ? formatDailyTitle(date, 'jalali') : formatDailyTitle(date, 'gregorian');
   const existing = notes.find((note) => note.daily_date === date && !note.deleted_at);
 
   React.useEffect(() => {
@@ -78,7 +87,10 @@ export function DailyScreen() {
               type="button"
               onClick={() => setCalendar('gregorian')}
               aria-pressed={calendar === 'gregorian'}
-              className={cn('rounded px-2 py-1', calendar === 'gregorian' && 'bg-accent font-medium')}
+              className={cn(
+                'rounded px-2 py-1',
+                calendar === 'gregorian' && 'bg-accent font-medium',
+              )}
             >
               میلادی
             </button>
@@ -114,10 +126,7 @@ export function DailyScreen() {
           />
         </div>
       ) : (
-        <Button
-          onClick={() => void ensureDailyNote(date, title)}
-          className="w-fit"
-        >
+        <Button onClick={() => void ensureDailyNote(date, title)} className="w-fit">
           ساخت یادداشت این روز
         </Button>
       )}
@@ -143,12 +152,13 @@ export function DailyScreen() {
 
       <section className="rounded-xl border border-dashed p-4 text-xs leading-6 text-muted-foreground">
         <p>
-          نکته: هر روز فقط یک یادداشت روزانه ساخته می‌شود. تاریخ شمسی به‌صورت پیش‌فرض استفاده می‌شود و می‌توانید آن را از
-          دکمه‌های بالا یا تنظیمات تغییر دهید.
+          نکته: هر روز فقط یک یادداشت روزانه ساخته می‌شود. تاریخ شمسی به‌صورت پیش‌فرض استفاده می‌شود
+          و می‌توانید آن را از دکمه‌های بالا یا تنظیمات تغییر دهید.
         </p>
         <p className="mt-1">
-          امروز: {toPersianDigits(toJalali(new Date()).year)}/{toPersianDigits(toGregorian(toJalali(new Date())).getMonth() + 1)}
-          {' '}— تاریخ شمسی با الگوریتم داخلی محاسبه می‌شود.
+          امروز: {toPersianDigits(toJalali(new Date()).year)}/
+          {toPersianDigits(toGregorian(toJalali(new Date())).getMonth() + 1)} — تاریخ شمسی با
+          الگوریتم داخلی محاسبه می‌شود.
         </p>
       </section>
     </div>

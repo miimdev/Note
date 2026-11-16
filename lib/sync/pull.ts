@@ -8,7 +8,14 @@ import { toSummary } from '@/lib/db/notes-repo';
 export const NOTE_COLUMNS =
   'id,user_id,folder_id,title,content,content_text,icon,cover_url,is_pinned,is_favorite,is_archived,deleted_at,daily_date,version,last_edited_at,created_at,updated_at';
 
-export const ALL_TABLES = ['notes', 'folders', 'tags', 'note_tags', 'templates', 'reminders'] as const;
+export const ALL_TABLES = [
+  'notes',
+  'folders',
+  'tags',
+  'note_tags',
+  'templates',
+  'reminders',
+] as const;
 
 /** Adds local-only bookkeeping columns to a server row. */
 export function stampLocalWith<T extends { updated_at: string }>(row: T) {
@@ -47,7 +54,11 @@ export async function pullNotes(client: SupabaseClient, userId: string, since?: 
 }
 
 export async function pullFolders(client: SupabaseClient, userId: string) {
-  const { data, error } = await client.from('folders').select('*').eq('user_id', userId).order('position');
+  const { data, error } = await client
+    .from('folders')
+    .select('*')
+    .eq('user_id', userId)
+    .order('position');
   if (error) throw error;
   const db = getDb();
   await db.folders.clear();
@@ -65,7 +76,9 @@ export async function pullTags(client: SupabaseClient, userId: string) {
   const { data: links } = await client.from('note_tags').select('*').eq('user_id', userId);
   await db.noteTags.clear();
   if (links?.length) {
-    await db.noteTags.bulkPut(links.map((row) => ({ note_id: row.note_id, tag_id: row.tag_id, user_id: row.user_id })));
+    await db.noteTags.bulkPut(
+      links.map((row) => ({ note_id: row.note_id, tag_id: row.tag_id, user_id: row.user_id })),
+    );
   }
   return { tags: (data ?? []) as Tag[], links: links ?? [] };
 }

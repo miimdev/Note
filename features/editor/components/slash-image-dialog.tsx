@@ -97,7 +97,10 @@ export function SlashImageDialog({ editor, range, onClose, noteId, userId }: Pro
           <Button variant="outline" onClick={onClose} type="button">
             انصراف
           </Button>
-          <Button onClick={() => url.trim() && insert(url.trim())} disabled={!url.trim() || uploading}>
+          <Button
+            onClick={() => url.trim() && insert(url.trim())}
+            disabled={!url.trim() || uploading}
+          >
             افزودن
           </Button>
         </DialogFooter>

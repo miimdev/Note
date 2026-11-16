@@ -68,7 +68,9 @@ export function useNoteActions() {
           });
         }
         const client = getSupabaseBrowserClient();
-        await client.from('note_tags').insert(options.tagIds.map((tagId) => ({ note_id: id, tag_id: tagId, user_id: userId })));
+        await client
+          .from('note_tags')
+          .insert(options.tagIds.map((tagId) => ({ note_id: id, tag_id: tagId, user_id: userId })));
         const map = new Map(useNotesStore.getState().noteTags);
         map.set(id, options.tagIds);
         useNotesStore.getState().setNoteTags(map);

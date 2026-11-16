@@ -2,7 +2,13 @@
 
 import * as React from 'react';
 import type { Folder } from '@/types/database.types';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useFolderActions } from './use-folder-actions';
@@ -35,7 +41,13 @@ export function RenameFolderDialog({
           <DialogHeader>
             <DialogTitle>تغییر نام پوشه</DialogTitle>
           </DialogHeader>
-          <Input value={name} onChange={(event) => setName(event.target.value)} autoFocus required maxLength={120} />
+          <Input
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            autoFocus
+            required
+            maxLength={120}
+          />
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               انصراف

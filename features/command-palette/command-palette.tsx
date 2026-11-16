@@ -84,12 +84,48 @@ export function CommandPalette() {
         group: 'یادداشت',
         run: () => router.push('/templates'),
       },
-      { id: 'all', label: 'همه یادداشت‌ها', icon: FileText, group: 'پیمایش', run: () => router.push('/notes') },
-      { id: 'favorites', label: 'علاقه‌مندی‌ها', icon: Star, group: 'پیمایش', run: () => router.push('/favorites') },
-      { id: 'graph', label: 'شبکه دانش', icon: Globe, group: 'پیمایش', run: () => router.push('/graph') },
-      { id: 'archive', label: 'آرشیو', icon: Archive, group: 'پیمایش', run: () => router.push('/archive') },
-      { id: 'trash', label: 'سطل زباله', icon: Trash2, group: 'پیمایش', run: () => router.push('/trash') },
-      { id: 'settings', label: 'تنظیمات', icon: Settings, group: 'پیمایش', run: () => router.push('/settings') },
+      {
+        id: 'all',
+        label: 'همه یادداشت‌ها',
+        icon: FileText,
+        group: 'پیمایش',
+        run: () => router.push('/notes'),
+      },
+      {
+        id: 'favorites',
+        label: 'علاقه‌مندی‌ها',
+        icon: Star,
+        group: 'پیمایش',
+        run: () => router.push('/favorites'),
+      },
+      {
+        id: 'graph',
+        label: 'شبکه دانش',
+        icon: Globe,
+        group: 'پیمایش',
+        run: () => router.push('/graph'),
+      },
+      {
+        id: 'archive',
+        label: 'آرشیو',
+        icon: Archive,
+        group: 'پیمایش',
+        run: () => router.push('/archive'),
+      },
+      {
+        id: 'trash',
+        label: 'سطل زباله',
+        icon: Trash2,
+        group: 'پیمایش',
+        run: () => router.push('/trash'),
+      },
+      {
+        id: 'settings',
+        label: 'تنظیمات',
+        icon: Settings,
+        group: 'پیمایش',
+        run: () => router.push('/settings'),
+      },
       {
         id: 'search-page',
         label: 'جستجوی پیشرفته',
@@ -224,7 +260,9 @@ export function CommandPalette() {
               >
                 <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />
                 <span className="min-w-0 flex-1 truncate">{command.label}</span>
-                {command.hint && <span className="shrink-0 text-[11px] text-muted-foreground">{command.hint}</span>}
+                {command.hint && (
+                  <span className="shrink-0 text-[11px] text-muted-foreground">{command.hint}</span>
+                )}
               </button>
             );
           })}

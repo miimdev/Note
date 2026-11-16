@@ -34,7 +34,13 @@ export function useHotkeys(map: HotkeyMap, options: { allowInEditor?: string[] }
       if (!callback) return;
 
       const allowedInEditor = options.allowInEditor?.includes(combo);
-      if (!event.metaKey && !event.ctrlKey && !event.altKey && isEditableTarget(event.target) && !allowedInEditor) {
+      if (
+        !event.metaKey &&
+        !event.ctrlKey &&
+        !event.altKey &&
+        isEditableTarget(event.target) &&
+        !allowedInEditor
+      ) {
         return;
       }
 

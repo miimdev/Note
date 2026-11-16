@@ -30,7 +30,9 @@ export async function setNoteTags(noteId: string, userId: string, tagIds: string
     const existing = await db.noteTags.where('note_id').equals(noteId).toArray();
     const toDelete = existing.filter((row) => !tagIds.includes(row.tag_id));
     await Promise.all(
-      toDelete.map((row) => db.noteTags.where('[note_id+tag_id]').equals([row.note_id, row.tag_id]).delete()),
+      toDelete.map((row) =>
+        db.noteTags.where('[note_id+tag_id]').equals([row.note_id, row.tag_id]).delete(),
+      ),
     );
     const toAdd = tagIds.filter((id) => !existing.some((row) => row.tag_id === id));
     await Promise.all(
@@ -58,7 +60,10 @@ export async function putTemplates(templates: Template[]): Promise<void> {
 export async function getAllTemplates(): Promise<Template[]> {
   const templates = await getDb().templates.toArray();
   return templates.sort(
-    (a, b) => Number(b.is_system) - Number(a.is_system) || a.position - b.position || a.name.localeCompare(b.name, 'fa'),
+    (a, b) =>
+      Number(b.is_system) - Number(a.is_system) ||
+      a.position - b.position ||
+      a.name.localeCompare(b.name, 'fa'),
   );
 }
 

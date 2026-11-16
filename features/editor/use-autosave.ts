@@ -24,7 +24,11 @@ type AutosaveState = {
 
 const AUTOSAVE_DELAY = 700;
 
-export function useAutosave({ noteId, userId, delay = AUTOSAVE_DELAY }: UseAutosaveParams): AutosaveState {
+export function useAutosave({
+  noteId,
+  userId,
+  delay = AUTOSAVE_DELAY,
+}: UseAutosaveParams): AutosaveState {
   const setSaveStatus = useUiStore((state) => state.setSaveStatus);
   const status = useUiStore((state) => state.saveStatus);
   const pending = React.useRef<{ title: string; content: NoteContent } | null>(null);

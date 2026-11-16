@@ -48,7 +48,9 @@ export function BacklinksPanel({ noteId }: Props) {
       if (!active) return;
       setLinks((outgoing.data ?? []) as NoteLink[]);
       setIncoming((backlinks.data ?? []) as NoteLink[]);
-      setRelated(((suggestions.data ?? []) as { id: string; title: string; reason: string }[]) ?? []);
+      setRelated(
+        ((suggestions.data ?? []) as { id: string; title: string; reason: string }[]) ?? [],
+      );
       setLoading(false);
     }
 
@@ -83,7 +85,8 @@ export function BacklinksPanel({ noteId }: Props) {
         </h3>
         {links.length === 0 ? (
           <p className="text-xs text-muted-foreground">
-            برای لینک‌دهی، در متن بنویسید <code className="rounded bg-muted px-1">[[عنوان یادداشت]]</code>
+            برای لینک‌دهی، در متن بنویسید{' '}
+            <code className="rounded bg-muted px-1">[[عنوان یادداشت]]</code>
           </p>
         ) : (
           <ul className="flex flex-col gap-1">
@@ -95,11 +98,16 @@ export function BacklinksPanel({ noteId }: Props) {
                     className="flex items-center gap-1.5 rounded-md px-1.5 py-1 text-primary hover:bg-accent"
                   >
                     <Link2 className="h-3 w-3 shrink-0" />
-                    <span className="truncate">{titleById.get(link.target_note_id) ?? link.target_title}</span>
+                    <span className="truncate">
+                      {titleById.get(link.target_note_id) ?? link.target_title}
+                    </span>
                   </Link>
                 </li>
               ) : (
-                <li key={link.id} className="flex items-center gap-1.5 px-1.5 py-1 text-muted-foreground">
+                <li
+                  key={link.id}
+                  className="flex items-center gap-1.5 px-1.5 py-1 text-muted-foreground"
+                >
                   <Link2 className="h-3 w-3 shrink-0 opacity-50" />
                   <span className="truncate">{link.target_title}</span>
                   <span className="rounded bg-muted px-1 text-[10px]">ناموجود</span>
@@ -121,7 +129,9 @@ export function BacklinksPanel({ noteId }: Props) {
           <ArrowDownLeft className="h-3.5 w-3.5" /> بک‌لینک‌ها ({incoming.length})
         </h3>
         {incoming.length === 0 ? (
-          <p className="text-xs text-muted-foreground">هنوز یادداشت دیگری به این‌جا لینک نداده است.</p>
+          <p className="text-xs text-muted-foreground">
+            هنوز یادداشت دیگری به این‌جا لینک نداده است.
+          </p>
         ) : (
           <ul className="flex flex-col gap-1">
             {incoming.map((link) => (
@@ -131,7 +141,9 @@ export function BacklinksPanel({ noteId }: Props) {
                   className="flex items-center gap-1.5 rounded-md px-1.5 py-1 hover:bg-accent"
                 >
                   <ArrowDownLeft className="h-3 w-3 shrink-0 text-muted-foreground" />
-                  <span className="truncate">{titleById.get(link.source_note_id) ?? 'یادداشت'}</span>
+                  <span className="truncate">
+                    {titleById.get(link.source_note_id) ?? 'یادداشت'}
+                  </span>
                 </Link>
               </li>
             ))}
@@ -147,7 +159,10 @@ export function BacklinksPanel({ noteId }: Props) {
           <ul className="flex flex-col gap-1">
             {related.map((note) => (
               <li key={note.id}>
-                <Link href={`/notes/${note.id}`} className="flex items-center justify-between gap-2 rounded-md px-1.5 py-1 hover:bg-accent">
+                <Link
+                  href={`/notes/${note.id}`}
+                  className="flex items-center justify-between gap-2 rounded-md px-1.5 py-1 hover:bg-accent"
+                >
                   <span className="truncate">{note.title || 'بدون عنوان'}</span>
                   <span className={cn('shrink-0 text-[10px] text-muted-foreground')}>
                     {reasonLabel[note.reason] ?? 'مرتبط'}

@@ -75,7 +75,9 @@ export async function uploadAttachment(params: {
 /** Re-creates a signed URL for an existing object. */
 export async function getAttachmentUrl(path: string, expiresIn = 3600): Promise<string | null> {
   const client = getSupabaseBrowserClient();
-  const { data, error } = await client.storage.from(ATTACHMENT_BUCKET).createSignedUrl(path, expiresIn);
+  const { data, error } = await client.storage
+    .from(ATTACHMENT_BUCKET)
+    .createSignedUrl(path, expiresIn);
   if (error) return null;
   return data?.signedUrl ?? null;
 }

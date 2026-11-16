@@ -7,10 +7,17 @@ import { cn } from '@/lib/utils';
 import { countWords, readingTimeMinutes } from '@/lib/editor/content';
 import { toPersianDigits } from '@/lib/jalali';
 
-const STATUS_META: Record<SaveStatus, { label: string; icon: React.ComponentType<{ className?: string }>; className: string }> = {
+const STATUS_META: Record<
+  SaveStatus,
+  { label: string; icon: React.ComponentType<{ className?: string }>; className: string }
+> = {
   idle: { label: 'آماده', icon: PenLine, className: 'text-muted-foreground' },
   dirty: { label: 'در حال ذخیره…', icon: PenLine, className: 'text-amber-600 dark:text-amber-400' },
-  saving: { label: 'در حال ذخیره…', icon: Loader2, className: 'text-amber-600 dark:text-amber-400' },
+  saving: {
+    label: 'در حال ذخیره…',
+    icon: Loader2,
+    className: 'text-amber-600 dark:text-amber-400',
+  },
   saved: { label: 'ذخیره شد', icon: Check, className: 'text-emerald-600 dark:text-emerald-400' },
   offline: { label: 'آفلاین — در صف', icon: CloudOff, className: 'text-sky-600 dark:text-sky-400' },
   error: { label: 'خطا در ذخیره', icon: AlertCircle, className: 'text-destructive' },

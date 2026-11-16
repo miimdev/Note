@@ -5,12 +5,24 @@ import { Bell, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { requestNotificationPermission, showLocalNotification } from './notifications';
 
-type Props = { noteId: string; noteTitle: string; open: boolean; onOpenChange: (open: boolean) => void };
+type Props = {
+  noteId: string;
+  noteTitle: string;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+};
 
 function defaultDateTime(): string {
   const date = new Date(Date.now() + 60 * 60 * 1000);
@@ -45,7 +57,9 @@ export function ReminderDialog({ noteId, noteTitle, open, onOpenChange }: Props)
       if (granted) {
         toast.success('یادآور ثبت شد', { description: 'اعلان مرورگر فعال است.' });
       } else {
-        toast.success('یادآور ثبت شد', { description: 'اعلان مرورگر غیرفعال است؛ داخل برنامه نمایش داده می‌شود.' });
+        toast.success('یادآور ثبت شد', {
+          description: 'اعلان مرورگر غیرفعال است؛ داخل برنامه نمایش داده می‌شود.',
+        });
       }
       onOpenChange(false);
     } catch (error) {

@@ -88,7 +88,9 @@ export function NotesList({
   return (
     <div
       className={
-        view === 'grid' ? 'grid gap-3 sm:grid-cols-2 lg:grid-cols-3' : 'flex flex-col divide-y rounded-xl border'
+        view === 'grid'
+          ? 'grid gap-3 sm:grid-cols-2 lg:grid-cols-3'
+          : 'flex flex-col divide-y rounded-xl border'
       }
     >
       {notes.map((note) => (
@@ -96,7 +98,9 @@ export function NotesList({
           key={note.id}
           note={note}
           query={query}
-          tagNames={(noteTags.get(note.id) ?? []).map((id) => tagNameById.get(id) ?? '').filter(Boolean)}
+          tagNames={(noteTags.get(note.id) ?? [])
+            .map((id) => tagNameById.get(id) ?? '')
+            .filter(Boolean)}
         />
       ))}
     </div>

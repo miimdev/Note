@@ -32,7 +32,11 @@ export type BuildExtensionsOptions = {
 };
 
 export function buildExtensions(options: BuildExtensionsOptions = {}): Extensions {
-  const { placeholder = 'برای شروع بنویسید، یا با «/» یک بلاک اضافه کنید…', slash, onOpenWikiLink } = options;
+  const {
+    placeholder = 'برای شروع بنویسید، یا با «/» یک بلاک اضافه کنید…',
+    slash,
+    onOpenWikiLink,
+  } = options;
 
   return [
     StarterKit.configure({
@@ -62,7 +66,9 @@ export function buildExtensions(options: BuildExtensionsOptions = {}): Extension
     CodeBlockLowlight.configure({ lowlight, defaultLanguage: 'plaintext' }),
     Placeholder.configure({ placeholder, includeChildren: true }),
     CharacterCount,
-    UniqueID.configure({ types: ['paragraph', 'heading', 'blockquote', 'listItem', 'taskItem', 'codeBlock'] }),
+    UniqueID.configure({
+      types: ['paragraph', 'heading', 'blockquote', 'listItem', 'taskItem', 'codeBlock'],
+    }),
     WikiLink.configure({ onOpen: onOpenWikiLink }),
     AutoDirection,
     SlashCommand.configure(slash ?? {}),

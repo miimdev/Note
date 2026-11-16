@@ -46,7 +46,9 @@ export default async function PrintPage({ params, searchParams }: Params) {
           {note.icon ? `${note.icon} ` : ''}
           {note.title || 'بدون عنوان'}
         </h1>
-        <p className="mt-1 text-xs text-muted-foreground">آخرین ویرایش: {formatJalaliDateTime(note.updated_at)}</p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          آخرین ویرایش: {formatJalaliDateTime(note.updated_at)}
+        </p>
       </header>
       <article
         className="space-y-3 text-[15px] leading-8 [&_blockquote]:border-s-2 [&_blockquote]:ps-4 [&_h1]:mt-6 [&_h1]:text-xl [&_h1]:font-semibold [&_h2]:mt-5 [&_h2]:text-lg [&_h2]:font-semibold [&_h3]:font-semibold [&_hr]:my-6 [&_img]:max-w-full [&_img]:rounded-lg [&_ol]:list-decimal [&_ol]:ps-6 [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:bg-muted [&_pre]:p-4 [&_pre]:text-xs [&_ul]:list-disc [&_ul]:ps-6"

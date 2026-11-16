@@ -54,8 +54,18 @@ export function ImportMarkdownButton({ folderId = null }: { folderId?: string | 
         className="hidden"
         onChange={(event) => event.target.files && void handleFiles(event.target.files)}
       />
-      <Button variant="outline" size="sm" onClick={() => inputRef.current?.click()} disabled={busy} className="gap-1.5">
-        {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FileUp className="h-3.5 w-3.5" />}
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => inputRef.current?.click()}
+        disabled={busy}
+        className="gap-1.5"
+      >
+        {busy ? (
+          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+        ) : (
+          <FileUp className="h-3.5 w-3.5" />
+        )}
         ورود Markdown
       </Button>
     </>

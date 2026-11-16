@@ -5,7 +5,13 @@ import { Folder as FolderIcon } from 'lucide-react';
 import { useNotesStore } from '@/store/notes-store';
 import { useNoteActions } from './use-note-actions';
 
-export function NoteFolderPicker({ noteId, folderId }: { noteId: string; folderId: string | null }) {
+export function NoteFolderPicker({
+  noteId,
+  folderId,
+}: {
+  noteId: string;
+  folderId: string | null;
+}) {
   const folders = useNotesStore((state) => state.folders);
   const { moveNote } = useNoteActions();
 

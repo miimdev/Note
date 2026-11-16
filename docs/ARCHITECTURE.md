@@ -19,18 +19,18 @@
 
 ## ۱) تصمیم‌های معماری (ADR کوتاه)
 
-| # | تصمیم | جایگزین رد‌شده | چرا |
-|---|-------|----------------|-----|
-| ADR-1 | **Supabase پروژه‌ی کاملاً جدید** (`notebook-note`) | استفاده از `public` پروژه‌ی kenaret | kenaret داده‌ی زنده و جدول `profiles` دارد؛ قید «هیچ تغییر در داده‌ی موجود» |
-| ADR-2 | محتوا در `notes.content` به‌صورت **JSONB = سند TipTap**، و متن مسطح در `content_text` | HTML خام | JSONB ساختارمند و قابل sanitize، متن مسطح برای جستجو و word-count |
-| ADR-3 | **offline-first**: Dexie منبع حقیقت محلی، Supabase مقصد | server-first + optimistic UI | الزام «کارکرد کامل آفلاین»؛ نوشتن آفلاین بدون تردید |
-| ADR-4 | حل تداخل با **`version` عددی + مقایسه‌ی نسخه‌ها** (نه last-write-wins) | LWW کور | الزام «نمایش پیغام در صورت نیاز به تصمیم کاربر» |
-| ADR-5 | `note_links` **صریح ذخیره می‌شود** (نه view محاسباتی) | استخراج در زمان خواندن | بک‌لینک و گراف سریع + امکان رفرنس به یادداشت ناموجود (dangling link) |
-| ADR-6 | جستجو با `tsvector` (GIN) + `pg_trgm` برای تحمل غلط املایی، **config ساده‌ی `simple`** | `english`/`persian` config | `simple` برای فارسی و انگلیسی یکسان عمل می‌کند و به دیکشنری وابسته نیست |
-| ADR-7 | اشتراک‌گذاری عمومی فقط با **token** و یک **RPC با `security definer`** | RLS روی جدول + anon key | anon نباید به جدول‌ها دسترسی داشته باشد؛ فقط یک تابع محدود |
-| ADR-8 | PDF با **print stylesheet + `window.print()`** | Playwright سمت سرور | سبک، RTL دقیق، بدون هزینه‌ی اجرای DLL روی Vercel |
-| ADR-9 | AI پشت feature flag و از **Route Handler** با `OPENROUTER_API_KEY` | تماس مستقیم مرورگر | کلید فقط سمت سرور |
-| ADR-10 | TipTap با **Extension‌های بلاکی** و `UniqueID` روی هر بلاک | ادیتور HTML آزاد | drag & drop بلاک، undo/redo، و پایداری شناسه‌ها برای همگام‌سازی |
+| #      | تصمیم                                                                                  | جایگزین رد‌شده                      | چرا                                                                         |
+| ------ | -------------------------------------------------------------------------------------- | ----------------------------------- | --------------------------------------------------------------------------- |
+| ADR-1  | **Supabase پروژه‌ی کاملاً جدید** (`notebook-note`)                                      | استفاده از `public` پروژه‌ی kenaret | kenaret داده‌ی زنده و جدول `profiles` دارد؛ قید «هیچ تغییر در داده‌ی موجود» |
+| ADR-2  | محتوا در `notes.content` به‌صورت **JSONB = سند TipTap**، و متن مسطح در `content_text`  | HTML خام                            | JSONB ساختارمند و قابل sanitize، متن مسطح برای جستجو و word-count           |
+| ADR-3  | **offline-first**: Dexie منبع حقیقت محلی، Supabase مقصد                                | server-first + optimistic UI        | الزام «کارکرد کامل آفلاین»؛ نوشتن آفلاین بدون تردید                         |
+| ADR-4  | حل تداخل با **`version` عددی + مقایسه‌ی نسخه‌ها** (نه last-write-wins)                 | LWW کور                             | الزام «نمایش پیغام در صورت نیاز به تصمیم کاربر»                             |
+| ADR-5  | `note_links` **صریح ذخیره می‌شود** (نه view محاسباتی)                                  | استخراج در زمان خواندن              | بک‌لینک و گراف سریع + امکان رفرنس به یادداشت ناموجود (dangling link)        |
+| ADR-6  | جستجو با `tsvector` (GIN) + `pg_trgm` برای تحمل غلط املایی، **config ساده‌ی `simple`** | `english`/`persian` config          | `simple` برای فارسی و انگلیسی یکسان عمل می‌کند و به دیکشنری وابسته نیست     |
+| ADR-7  | اشتراک‌گذاری عمومی فقط با **token** و یک **RPC با `security definer`**                 | RLS روی جدول + anon key             | anon نباید به جدول‌ها دسترسی داشته باشد؛ فقط یک تابع محدود                  |
+| ADR-8  | PDF با **print stylesheet + `window.print()`**                                         | Playwright سمت سرور                 | سبک، RTL دقیق، بدون هزینه‌ی اجرای DLL روی Vercel                            |
+| ADR-9  | AI پشت feature flag و از **Route Handler** با `OPENROUTER_API_KEY`                     | تماس مستقیم مرورگر                  | کلید فقط سمت سرور                                                           |
+| ADR-10 | TipTap با **Extension‌های بلاکی** و `UniqueID` روی هر بلاک                             | ادیتور HTML آزاد                    | drag & drop بلاک، undo/redo، و پایداری شناسه‌ها برای همگام‌سازی             |
 
 ---
 
@@ -150,6 +150,7 @@ Note/
 ## ۴) طرح دیتابیس
 
 ### ۴.۱ قواعد عمومی
+
 - همه‌ی جدول‌ها: `id uuid primary key default gen_random_uuid()`, `created_at timestamptz not null default now()`, `updated_at timestamptz not null default now()`.
 - `user_id uuid not null references auth.users(id) on delete cascade` در همه‌ی جدول‌های شخصی.
 - تریگر عمومی `set_updated_at()` روی همه‌ی جدول‌های دارای `updated_at`.
@@ -159,39 +160,44 @@ Note/
 ### ۴.۲ جدول‌ها
 
 #### profiles
-| ستون | نوع | توضیح |
-|---|---|---|
-| id | uuid PK | همان `auth.users.id` (1:1) |
-| user_id | uuid unique not null → auth.users | برای یکدستی با بقیه‌ی جدول‌ها |
-| display_name | text | |
-| avatar_url | text | |
-| locale | text default `'fa'` | `fa` \| `en` |
-| theme | text default `'system'` | `light` \| `dark` \| `system` |
-| settings | jsonb default `'{}'` | `{ calendar:'jalali'\|'gregorian', direction:'auto', aiEnabled:bool, editorFont, ... }` |
+
+| ستون         | نوع                               | توضیح                                                                                   |
+| ------------ | --------------------------------- | --------------------------------------------------------------------------------------- |
+| id           | uuid PK                           | همان `auth.users.id` (1:1)                                                              |
+| user_id      | uuid unique not null → auth.users | برای یکدستی با بقیه‌ی جدول‌ها                                                           |
+| display_name | text                              |                                                                                         |
+| avatar_url   | text                              |                                                                                         |
+| locale       | text default `'fa'`               | `fa` \| `en`                                                                            |
+| theme        | text default `'system'`           | `light` \| `dark` \| `system`                                                           |
+| settings     | jsonb default `'{}'`              | `{ calendar:'jalali'\|'gregorian', direction:'auto', aiEnabled:bool, editorFont, ... }` |
 
 ایندکس: `(user_id)` unique. پر شدن خودکار با تریگر `handle_new_user()` روی `auth.users`.
 
 #### folders
+
 `user_id`, `parent_id uuid null → folders(id) on delete cascade`, `name text not null`, `color text`, `icon text`, `position int default 0`
+
 - ایندکس: `(user_id, parent_id, position)`
 - قید: `parent_id <> id` (جلوگیری از self-parent). جلوگیری از حلقه در سطح اپ + تابع کمکی `is_descendant` (اختیاری در فاز بعد).
 
 #### notes
-| ستون | نوع | توضیح |
-|---|---|---|
-| user_id, folder_id | uuid | `folder_id → folders(id) on delete set null` |
-| title | text default `''` | |
-| content | jsonb default سند خالی TipTap | |
-| content_text | text default `''` | متن مسطح، با تریگر از `content` |
-| search_vector | tsvector | `setweight(title,'A') || setweight(content_text,'B')` |
-| icon, cover_url | text | |
-| is_pinned, is_favorite, is_archived | bool default false | |
-| deleted_at | timestamptz null | soft delete (سطل زباله) |
-| version | int default 1 | base_version برای تعارض |
-| daily_date | date null | برای یادداشت روزانه یکتا در روز |
-| last_synced_at | timestamptz | سلامت‌سنجی |
+
+| ستون                                | نوع                           | توضیح                                        |
+| ----------------------------------- | ----------------------------- | -------------------------------------------- |
+| user_id, folder_id                  | uuid                          | `folder_id → folders(id) on delete set null` |
+| title                               | text default `''`             |                                              |
+| content                             | jsonb default سند خالی TipTap |                                              |
+| content_text                        | text default `''`             | متن مسطح، با تریگر از `content`              |
+| search_vector                       | tsvector                      | `setweight(title,'A')                        |     | setweight(content_text,'B')` |
+| icon, cover_url                     | text                          |                                              |
+| is_pinned, is_favorite, is_archived | bool default false            |                                              |
+| deleted_at                          | timestamptz null              | soft delete (سطل زباله)                      |
+| version                             | int default 1                 | base_version برای تعارض                      |
+| daily_date                          | date null                     | برای یادداشت روزانه یکتا در روز              |
+| last_synced_at                      | timestamptz                   | سلامت‌سنجی                                   |
 
 ایندکس‌ها:
+
 - `gin (search_vector)`
 - `(user_id, updated_at desc) where deleted_at is null`
 - `(user_id, folder_id)`, `(user_id, is_pinned desc, updated_at desc)`
@@ -199,30 +205,40 @@ Note/
 - `gin (content jsonb_path_ops)` (اختیاری، برای جستجوی ساختاری آینده)
 
 #### tags و note_tags
+
 `tags`: `user_id`, `name text not null`, `slug text not null`, `color text`, unique `(user_id, slug)`.
 `note_tags`: `note_id`, `tag_id`, `user_id`, PK `(note_id, tag_id)`, cascade از هر دو سمت. ایندکس `(user_id, tag_id)`.
 
 #### note_links
+
 `user_id`, `source_note_id → notes on delete cascade`, `target_note_id → notes on delete cascade`, `target_title text` (برای dangling)، unique `(source_note_id, target_note_id)`.
 ایندکس: `(target_note_id)` برای بک‌لینک، `(source_note_id)`.
+
 > استخراج `[[...]]` در تریگر روی `notes.content` انجام می‌شود و لینک‌های یتیم (بدون target) با `target_note_id null` نگه داشته می‌شوند.
 
 #### note_versions
+
 `note_id`, `user_id`, `title`, `content jsonb`, `version int`, `created_at`.
+
 - unique `(note_id, version)`، ایندکس `(note_id, version desc)`.
 - سیاست نگه‌داری: ۲ نسخه‌ی اخیر همیشه + حداکثر ۵۰ نسخه، پاک‌سازی با تابع `prune_note_versions()` (cron یا در حین insert).
 - ساخت نسخه با تریگر BEFORE UPDATE روی notes وقتی محتوا/عنوان تغییر کند و > ۵ دقیقه از نسخه‌ی آخر گذشته باشد (کاهش نویز).
 
 #### reminders
+
 `note_id`, `user_id`, `remind_at timestamptz not null`, `is_done bool default false`, `fired_at timestamptz null`, `channel text default 'browser'`.
 ایندکس `(user_id, remind_at) where is_done = false`.
 
 #### templates
+
 `user_id`, `name`, `content jsonb`, `icon`, `is_system bool default false`, `position int`.
+
 > قالب‌های آماده (جلسه، کارها، ژورنال، پروژه) به‌صورت ردیف‌های `is_system = true` ساخته می‌شوند. برای این که هر کاربر بتواند آن‌ها را ببیند بدون نقض RLS، policy خواندن: `user_id = auth.uid() or is_system = true`.
 
 #### shared_notes
+
 `note_id`, `user_id`, `token text unique not null` (۱۶+ بایت base64url), `expires_at timestamptz null`, `is_active bool default true`, `created_at`.
+
 - ایندکس `unique (token) where is_active`.
 - سیاست: هیچ policy برای anon. خواندن عمومی فقط با RPC زیر.
 
@@ -235,28 +251,33 @@ language sql security definer set search_path = public as $$ ... $$;
 ```
 
 #### attachments
+
 `note_id`, `user_id`, `storage_path text not null`, `file_name`, `mime_type`, `size_bytes bigint`, `width`, `height`.
+
 - Storage bucket `note-attachments` **خصوصی**؛ مسیر `{user_id}/{note_id}/{uuid}.{ext}`.
 - Storage policies: `select/insert/delete` با `(storage.foldername(name))[1] = auth.uid()::text`.
 - Public URLs فقط از طریق signed URL کوتاه‌مدت.
 
 #### activity_log (پیشنهاد افزوده)
+
 `user_id`, `entity`, `entity_id`, `action`, `meta jsonb` — برای «آخرین تغییرات» و اشکال‌زدایی همگام‌سازی. سبک و قابل prune.
 
 ### ۴.۳ توابع و تریگرهای کلیدی
-| نام | نوع | کار |
-|---|---|---|
-| `set_updated_at()` | trigger | `new.updated_at = now()` |
-| `handle_new_user()` | trigger on auth.users | ساخت `profiles` + قالب‌های پیش‌فرض |
-| `notes_search_vector_update()` | trigger on notes | ساخت `content_text` (اگر null) و `search_vector` |
-| `notes_extract_links()` | trigger after insert/update content | همگام‌سازی `note_links` |
-| `notes_snapshot_version()` | trigger before update | ثبت `note_versions` + `version = version + 1` |
-| `soft_delete_expired_notes()` | function | حذف قطعی notes با `deleted_at < now() - 30 days` |
-| `search_notes(q text, ...)` | RPC | ترکیب `websearch_to_tsquery` + شباهت trigram، صفحه‌بندی، exclude deleted |
-| `get_shared_note(token)` | RPC security definer | خواندن عمومی سهم |
-| `prune_note_versions(note_id)` | function | نگه‌داری نسخه‌ها |
+
+| نام                            | نوع                                 | کار                                                                      |
+| ------------------------------ | ----------------------------------- | ------------------------------------------------------------------------ |
+| `set_updated_at()`             | trigger                             | `new.updated_at = now()`                                                 |
+| `handle_new_user()`            | trigger on auth.users               | ساخت `profiles` + قالب‌های پیش‌فرض                                       |
+| `notes_search_vector_update()` | trigger on notes                    | ساخت `content_text` (اگر null) و `search_vector`                         |
+| `notes_extract_links()`        | trigger after insert/update content | همگام‌سازی `note_links`                                                  |
+| `notes_snapshot_version()`     | trigger before update               | ثبت `note_versions` + `version = version + 1`                            |
+| `soft_delete_expired_notes()`  | function                            | حذف قطعی notes با `deleted_at < now() - 30 days`                         |
+| `search_notes(q text, ...)`    | RPC                                 | ترکیب `websearch_to_tsquery` + شباهت trigram، صفحه‌بندی، exclude deleted |
+| `get_shared_note(token)`       | RPC security definer                | خواندن عمومی سهم                                                         |
+| `prune_note_versions(note_id)` | function                            | نگه‌داری نسخه‌ها                                                         |
 
 ### ۴.۴ استراتژی جستجو (فارسی + انگلیسی + غلط املایی)
+
 ```sql
 -- مرحله ۱: دقیق/ریشه‌ای
 websearch_to_tsquery('simple', :q)
@@ -264,11 +285,13 @@ websearch_to_tsquery('simple', :q)
 similarity(title, :q) > 0.25 OR title % :q
 OR EXISTS (select 1 from unnest(:terms) t where content_text ILIKE '%'||t||'%' or similarity(content_text, t) > 0.2)
 ```
+
 - `pg_trgm` + ایندکس `gin (title gin_trgm_ops)` و `gin (content_text gin_trgm_ops)`.
 - نرمال‌سازی فارسی قبل از ایندکس/جستجو: `ی`/`ي`، `ک`/`ك`، حذف اعراب، تبدیل ارقام فارسی/عربی به لاتین. این کار در تابع `normalize_fa(text)` انجام و در `content_text` ذخیره می‌شود (ستون موازی `content_text_norm` یا همان `content_text` نرمال‌شده). **تصمیم:** `content_text` نرمال‌شده نگه داشته می‌شود تا جستجو ساده بماند.
 - هایلایت نتایج سمت کلاینت با `ts_headline` در RPC (`highlight boolean`) یا با ساخت قطعه در TS.
 
 ### ۴.۵ چرخه‌ی عمر داده
+
 - **Soft delete:** `deleted_at` → نمایش در سطل زباله → حذف قطعی دستی یا خودکار بعد از ۳۰ روز (Cron روی Supabase یا Vercel Cron روزانه).
 - **آرشیو:** `is_archived` جدا از حذف؛ در جستجوی پیش‌فرض حذف می‌شود.
 - **نسخه‌ها:** snapshot بر اساس آستانه‌ی زمانی/حجمی، نگه‌داری محدود.
@@ -303,12 +326,12 @@ OR EXISTS (select 1 from unnest(:terms) t where content_text ILIKE '%'||t||'%' o
 
 ## ۸) استراتژی آزمون
 
-| لایه | ابزار | نمونه |
-|---|---|---|
-| Unit | Vitest | `search-query`, `text-direction`, `links-extract`, `sync-merge`, `jalali`, zod schemas |
-| Integration | Vitest + MSW | autosave state machine, outbox retry |
-| E2E | Playwright | ثبت‌نام/ورود، ساخت و ویرایش یادداشت، `[[link]]` + بک‌لینک، جستجو، اشتراک عمومی، آفلاین → آنلاین |
-| Lint | ESLint + Prettier | در CI با typecheck |
+| لایه        | ابزار             | نمونه                                                                                           |
+| ----------- | ----------------- | ----------------------------------------------------------------------------------------------- |
+| Unit        | Vitest            | `search-query`, `text-direction`, `links-extract`, `sync-merge`, `jalali`, zod schemas          |
+| Integration | Vitest + MSW      | autosave state machine, outbox retry                                                            |
+| E2E         | Playwright        | ثبت‌نام/ورود، ساخت و ویرایش یادداشت، `[[link]]` + بک‌لینک، جستجو، اشتراک عمومی، آفلاین → آنلاین |
+| Lint        | ESLint + Prettier | در CI با typecheck                                                                              |
 
 ---
 
@@ -327,15 +350,15 @@ CRON_SECRET=                        # محافظت مسیر پاک‌سازی س
 
 ## ۱۰) نقشه‌ی راه پیاده‌سازی
 
-| مرحله | خروجی | commit |
-|---|---|---|
-| ۱ | همین سند + `DATABASE.md` + `README` اولیه | `docs: architecture and database design` |
-| ۲ | اسکافولد Next+TS+Tailwind+shadcn، auth، migrations+RLS، Storage، middleware | ۳–۴ commit کوچک |
-| ۳ | ادیتور، پوشه/برچسب، autosave، جستجو (MVP) | … |
-| ۴ | لینک دوطرفه، گراف، پالت، یادداشت روزانه، قالب‌ها | … |
-| ۵ | نسخه‌ها، Realtime، آفلاین (Dexie+outbox)، PWA | … |
-| ۶ | اشتراک، خروجی/ورودی، یادآور، AI | … |
-| ۷ | پولیش UI، تست‌ها، CI، مستندات، دیپلوی | … |
+| مرحله | خروجی                                                                       | commit                                   |
+| ----- | --------------------------------------------------------------------------- | ---------------------------------------- |
+| ۱     | همین سند + `DATABASE.md` + `README` اولیه                                   | `docs: architecture and database design` |
+| ۲     | اسکافولد Next+TS+Tailwind+shadcn، auth، migrations+RLS، Storage، middleware | ۳–۴ commit کوچک                          |
+| ۳     | ادیتور، پوشه/برچسب، autosave، جستجو (MVP)                                   | …                                        |
+| ۴     | لینک دوطرفه، گراف، پالت، یادداشت روزانه، قالب‌ها                            | …                                        |
+| ۵     | نسخه‌ها، Realtime، آفلاین (Dexie+outbox)، PWA                               | …                                        |
+| ۶     | اشتراک، خروجی/ورودی، یادآور، AI                                             | …                                        |
+| ۷     | پولیش UI، تست‌ها، CI، مستندات، دیپلوی                                       | …                                        |
 
 ---
 
