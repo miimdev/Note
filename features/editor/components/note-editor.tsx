@@ -38,6 +38,9 @@ export function NoteEditor({
   className,
 }: NoteEditorProps) {
   const [title, setTitle] = React.useState(initialTitle);
+  // The editor (and its `onUpdate` handler) is created once, so the handler must
+  // read the latest title from a ref instead of a captured `title` value.
+  const lastTitle = React.useRef(initialTitle);
   const [imageDialog, setImageDialog] = React.useState<{
     editor: Editor;
     range: { from: number; to: number };
@@ -70,13 +73,11 @@ export function NoteEditor({
     },
     onUpdate: ({ editor: instance }) => {
       autosave.save({
-        title,
+        title: lastTitle.current,
         content: instance.getJSON() as NoteContent,
       });
     },
   });
-
-  const lastTitle = React.useRef(title);
 
   const handleTitleChange = (value: string) => {
     setTitle(value);
@@ -87,16 +88,17 @@ export function NoteEditor({
   };
 
   // Ctrl/Cmd+S forces an immediate flush.
+  const saveNow = autosave.saveNow;
   React.useEffect(() => {
     const handler = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 's') {
         event.preventDefault();
-        void autosave.saveNow();
+        void saveNow();
       }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [autosave]);
+  }, [saveNow]);
 
   if (!editor) {
     return <div className="h-40 animate-pulse rounded-lg bg-muted" aria-hidden />;
