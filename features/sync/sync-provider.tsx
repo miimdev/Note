@@ -8,6 +8,33 @@ import { getSyncEngine, type SyncEngine } from '@/lib/sync/engine';
 import { useNotesStore } from '@/store/notes-store';
 import { useSyncStore } from '@/store/sync-store';
 import { getDb } from '@/lib/db/local-db';
+import type { Note } from '@/types/database.types';
+import { emptyDoc } from '@/lib/editor/content';
+
+/** The conflict dialog only reads these fields; fill them for local rows. */
+function toConflictNote(note: (Partial<Note> & { id: string }) | LocalNoteForConflict): Note {
+  return {
+    id: note.id,
+    user_id: note.user_id ?? '',
+    folder_id: note.folder_id ?? null,
+    title: note.title ?? '',
+    content: note.content ?? emptyDoc(),
+    content_text: note.content_text ?? '',
+    icon: note.icon ?? null,
+    cover_url: note.cover_url ?? null,
+    is_pinned: note.is_pinned ?? false,
+    is_favorite: note.is_favorite ?? false,
+    is_archived: note.is_archived ?? false,
+    deleted_at: note.deleted_at ?? null,
+    daily_date: note.daily_date ?? null,
+    version: note.version ?? 1,
+    last_edited_at: note.last_edited_at ?? note.updated_at ?? new Date().toISOString(),
+    created_at: note.created_at ?? new Date().toISOString(),
+    updated_at: note.updated_at ?? new Date().toISOString(),
+  };
+}
+
+type LocalNoteForConflict = Partial<Note> & { id: string };
 
 type SyncContextValue = {
   engine: SyncEngine | null;
@@ -129,13 +156,13 @@ export function SyncProvider({ children }: { children: React.ReactNode }) {
       current.subscribe(() => {
         void refresh();
       });
-      current.onConflict(({ noteId }) => {
+      current.onConflict(({ noteId, remote }) => {
         const local = useNotesStore.getState().notes.find((note) => note.id === noteId);
         if (!local) return;
         useNotesStore.getState().setConflict({
           noteId,
-          local: { ...local, content: local.content ?? { type: 'doc', content: [] } },
-          remote: { ...local, content: local.content ?? { type: 'doc', content: [] } },
+          local: toConflictNote({ ...local, content: local.content ?? emptyDoc() }),
+          remote: toConflictNote(remote),
         });
       });
 

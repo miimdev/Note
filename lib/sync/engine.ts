@@ -17,7 +17,7 @@ import {
   pullTemplates,
 } from './pull';
 
-type ConflictListener = (info: { noteId: string }) => void;
+type ConflictListener = (info: { noteId: string; remote: Note }) => void;
 type ChangeListener = () => void;
 
 /**
@@ -302,7 +302,7 @@ export class SyncEngine {
     });
 
     if (outcome.kind === 'conflict') {
-      this.conflictListeners.forEach((listener) => listener({ noteId: remote.id }));
+      this.conflictListeners.forEach((listener) => listener({ noteId: remote.id, remote }));
       return;
     }
 
