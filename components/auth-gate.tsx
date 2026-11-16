@@ -4,6 +4,7 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { useSync } from '@/features/sync/sync-provider';
+import { stripBasePath } from '@/lib/paths';
 
 /**
  * Client-side replacement for the middleware guard in static builds. It waits
@@ -24,7 +25,9 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
 
   React.useEffect(() => {
     if (!ready || !waited || user) return;
-    const next = `${window.location.pathname}${window.location.search}`;
+    // window.location.pathname already contains the deployment base path (e.g.
+    // /Note/notes/), but router.push adds basePath itself, so strip it here.
+    const next = stripBasePath(`${window.location.pathname}${window.location.search}`);
     router.replace(`/login?next=${encodeURIComponent(next)}`);
   }, [ready, router, user, waited]);
 

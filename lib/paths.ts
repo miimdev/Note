@@ -20,6 +20,19 @@ export function withBasePath(path: string): string {
   return `${BASE_PATH}${path}`;
 }
 
+/**
+ * Strips the deployment base path from a path read off `window.location`, so it
+ * can be handed to `router.push` (which adds the base path itself). Without
+ * this, `https://host/Note/notes/` becomes `/Note/Note/notes/` after login.
+ */
+export function stripBasePath(path: string): string {
+  if (!BASE_PATH) return path;
+  if (!path.startsWith('/')) return path;
+  if (path === BASE_PATH) return '/';
+  if (path.startsWith(`${BASE_PATH}/`)) return path.slice(BASE_PATH.length) || '/';
+  return path;
+}
+
 /** Absolute URL for the current origin, honouring the base path. */
 export function appUrl(path: string): string {
   const origin = typeof window === 'undefined' ? '' : window.location.origin;
