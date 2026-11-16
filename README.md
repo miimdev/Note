@@ -310,9 +310,22 @@ NEXT_PUBLIC_STATIC_EXPORT=true NEXT_PUBLIC_BASE_PATH=/Note npm run build:static
 2. Settings → Secrets and variables → Actions → **Variables**: `NEXT_PUBLIC_SUPABASE_URL`
    و `NEXT_PUBLIC_SUPABASE_ANON_KEY` (کلید anon عمومی است؛ RLS دسترسی را کنترل می‌کند).
    `NEXT_PUBLIC_SITE_URL` هم می‌تواند `https://<user>.github.io/<repo>/` باشد.
-3. در Supabase → Authentication → URL Configuration، آدرس
-   `https://<user>.github.io/<repo>/callback` را به Redirect URLs اضافه کنید.
-4. هر push به `main` (یا اجرای دستی) workflow `deploy.yml` را اجرا می‌کند.
+   اگر مقدارها را در تب **Secrets** گذاشتید هم کار می‌کند؛ workflow هر دو جا را
+   می‌خواند. بدون این دو مقدار، مرحله‌ی «Verify artifact» عمداً بیلد را متوقف
+   می‌کند تا سایت با بیلد ناقص منتشر نشود.
+3. در Supabase → Authentication → URL Configuration:
+   - **Site URL**: `https://<user>.github.io/<repo>/`
+   - **Redirect URLs**: `https://<user>.github.io/<repo>/callback`،
+     `https://<user>.github.io/<repo>/reset-password` و `.../Note/**`
+   - برای Google: همان Redirect URL مربوط به Supabase
+     (`https://<ref>.supabase.co/auth/v1/callback`) در Google Cloud Console ثبت
+     می‌شود؛ آدرس Pages فقط در Supabase لازم است.
+4. هر push به `main` (یا اجرای دستی از تب Actions) workflow `deploy.yml` را اجرا می‌کند.
+5. بعد از دیپلوی، دود‌تست خودکار:
+
+   ```bash
+   node scripts/verify-pages.mjs https://<user>.github.io/<repo>
+   ```
 
 ---
 
@@ -334,6 +347,7 @@ NEXT_PUBLIC_STATIC_EXPORT=true NEXT_PUBLIC_BASE_PATH=/Note npm run build:static
 - [x] PWA (manifest + service worker + صفحه آفلاین) + فونت self-hosted
 - [x] دستیار AI با OpenRouter پشت feature flag و rate limit
 - [x] تست واحد (۱۲۶)، E2E، CI، ESLint/Prettier، README و مستندات
+- [x] بیلد استاتیک و workflow دیپلوی GitHub Pages (`deploy.yml` + `verify-pages.mjs`)
 
 **باقی‌مانده / پیشنهاد بهبود**
 
