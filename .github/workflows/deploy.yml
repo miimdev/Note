@@ -96,6 +96,16 @@ jobs:
             echo "::error::service-role key found in the export"; exit 1
           fi
 
+          # The value given as the *anon* key must really be a public key: a
+          # service_role key pasted by mistake would bypass RLS in the browser.
+          case "$SUPABASE_ANON_KEY" in
+            sb_secret_*)
+              echo "::error::NEXT_PUBLIC_SUPABASE_ANON_KEY holds a secret key (sb_secret_...); use the anon or publishable key"; exit 1 ;;
+          esac
+          if printf '%s' "$SUPABASE_ANON_KEY" | grep -qi 'service_role'; then
+            echo "::error::NEXT_PUBLIC_SUPABASE_ANON_KEY decodes to service_role; use the anon or publishable key"; exit 1
+          fi
+
           echo "artifact ok: $(find out -type f | wc -l) files under $BASE"
 
       - name: Upload Pages artifact
