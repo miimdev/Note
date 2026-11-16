@@ -40,7 +40,7 @@ type ProfileRow = {
 
 export function SettingsScreen() {
   const { user, signOut, userId, signedIn } = useSync();
-  const { resolvedTheme, setTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const router = useRouter();
   const calendar = useUiStore((state) => state.calendar);
   const setCalendar = useUiStore((state) => state.setCalendar);
@@ -82,7 +82,8 @@ export function SettingsScreen() {
         .update({
           display_name: displayName.trim() || null,
           locale,
-          theme: (resolvedTheme as 'light' | 'dark') ?? 'system',
+          // Persist the preference itself ('system' included), not the resolved value.
+          theme: (theme as 'light' | 'dark' | 'system') ?? 'system',
           settings: { calendar },
         })
         .eq('user_id', userId);
@@ -178,9 +179,7 @@ export function SettingsScreen() {
             { id: 'system', label: 'خودکار', icon: MonitorSmartphone },
           ].map((option) => {
             const Icon = option.icon;
-            const active =
-              (option.id === 'dark' && resolvedTheme === 'dark') ||
-              (option.id === 'light' && resolvedTheme === 'light');
+            const active = theme === option.id;
             return (
               <button
                 key={option.id}
