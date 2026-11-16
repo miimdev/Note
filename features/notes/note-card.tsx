@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import type { LocalNote } from '@/types/domain';
 import { cn } from '@/lib/utils';
-import { relativeTime } from '@/lib/jalali';
+import { daysUntilPurge, relativeTime, toPersianDigits } from '@/lib/jalali';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -85,6 +85,16 @@ export const NoteCard = React.memo(function NoteCard({ note, query = '', tagName
           <p className="mt-0.5 line-clamp-2 text-xs leading-5 text-muted-foreground">
             {preview ? <HighlightText text={preview} query={query} /> : 'یادداشت خالی'}
           </p>
+          {trashMode && note.deleted_at && (
+            <p className="mt-1 text-[11px] text-amber-600 dark:text-amber-400">
+              {(() => {
+                const days = daysUntilPurge(note.deleted_at);
+                return days > 0
+                  ? `${toPersianDigits(days)} روز تا حذف خودکار`
+                  : 'به‌زودی حذف می‌شود';
+              })()}
+            </p>
+          )}
         </div>
 
         <div className="relative z-10 flex items-center gap-0.5">

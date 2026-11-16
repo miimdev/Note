@@ -172,6 +172,13 @@ export function useNoteActions() {
   const deleteForever = React.useCallback(
     async (id: string) => {
       if (!userId) return;
+      // Irreversible: always confirm before touching the server row.
+      const title = useNotesStore.getState().notes.find((note) => note.id === id)?.title;
+      const confirmed = window.confirm(
+        `یادداشت «${title || 'بدون عنوان'}» برای همیشه حذف شود؟ این کار قابل بازگشت نیست.`,
+      );
+      if (!confirmed) return;
+
       const client = getSupabaseBrowserClient();
       await getDb().notes.delete(id);
       useNotesStore.getState().removeNote(id);
