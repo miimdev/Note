@@ -90,7 +90,13 @@ jobs:
           test -f out/index.html || { echo "::error::missing index.html"; exit 1; }
 
           grep -q "$BASE/_next/" out/index.html || { echo "::error::assets are not under $BASE"; exit 1; }
-          grep -q "$SUPABASE_URL" out/index.html || { echo "::error::the Supabase URL did not make it into the bundle"; exit 1; }
+
+          # NEXT_PUBLIC_* values are inlined into the client chunks at build time,
+          # not into the prerendered HTML, so look at the whole artifact.
+          grep -rqF "$SUPABASE_URL" out/_next/static/chunks \
+            || { echo "::error::the Supabase URL did not make it into the client bundle"; exit 1; }
+          grep -rqF -- "$SUPABASE_ANON_KEY" out/_next/static/chunks \
+            || { echo "::error::the Supabase anon key did not make it into the client bundle"; exit 1; }
 
           if [ -n "$SERVICE_KEY" ] && grep -rq "$SERVICE_KEY" out; then
             echo "::error::service-role key found in the export"; exit 1
