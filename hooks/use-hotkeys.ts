@@ -22,29 +22,26 @@ export function useHotkeys(map: HotkeyMap, options: { allowInEditor?: string[] }
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
       const mod = event.metaKey || event.ctrlKey;
-      const parts: string[] = [];
-      if (mod) parts.push('mod');
-      if (event.altKey) parts.push('alt');
-      if (event.shiftKey) parts.push('shift');
-      const key = event.key.length === 1 ? event.key.toLowerCase() : event.key.toLowerCase();
-      parts.push(key);
-      const combo = parts.join('+');
+      const key = event.key.toLowerCase();
+      const base: string[] = [];
+      if (mod) base.push('mod');
+      if (event.altKey) base.push('alt');
 
-      const callback = ref.current[combo];
-      if (!callback) return;
+      // Punctuation such as `?` needs Shift on most layouts, but is registered
+      // as a plain key. Try the explicit combo first, then the shift-less one.
+      const combos: string[] = [];
+      if (event.shiftKey) combos.push([...base, 'shift', key].join('+'));
+      combos.push([...base, key].join('+'));
+
+      const combo = combos.find((candidate) => ref.current[candidate]);
+      if (!combo) return;
+      const callback = ref.current[combo]!;
 
       const allowedInEditor = options.allowInEditor?.includes(combo);
-      if (
-        !event.metaKey &&
-        !event.ctrlKey &&
-        !event.altKey &&
-        isEditableTarget(event.target) &&
-        !allowedInEditor
-      ) {
+      if (!mod && !event.altKey && isEditableTarget(event.target) && !allowedInEditor) {
         return;
       }
 
-      if (event.shiftKey && event.key === '/' && !callback) return;
       event.preventDefault();
       callback(event);
     };

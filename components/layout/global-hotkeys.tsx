@@ -5,6 +5,8 @@ import { useHotkeys } from '@/hooks/use-hotkeys';
 import { useUiStore } from '@/store/ui-store';
 import { useNoteActions } from '@/features/notes/use-note-actions';
 
+const ALLOW_IN_EDITOR = ['mod+k', 'mod+shift+f', 'mod+n'];
+
 export function GlobalHotkeys() {
   const router = useRouter();
   const { setCommandPaletteOpen, toggleFocusMode, setShortcutsDialogOpen } = useUiStore();
@@ -23,7 +25,8 @@ export function GlobalHotkeys() {
       'mod+shift+d': () => router.push('/daily'),
       'mod+shift+t': () => router.push('/trash'),
     },
-    { allowInEditor: ['mod+k', 'mod+shift+f', 'mod+n'] },
+    // Stable array: a literal here would re-bind the listener on every render.
+    { allowInEditor: ALLOW_IN_EDITOR },
   );
 
   return null;
