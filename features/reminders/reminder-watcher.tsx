@@ -21,6 +21,13 @@ export function ReminderWatcher() {
   const notes = useNotesStore((state) => state.notes);
   const router = useRouter();
 
+  // Note titles change constantly; keeping them in a ref avoids tearing down
+  // and re-creating the polling interval (and its `fired` set) on every sync.
+  const notesRef = React.useRef(notes);
+  React.useEffect(() => {
+    notesRef.current = notes;
+  }, [notes]);
+
   React.useEffect(() => {
     if (!userId) return;
     const fired = new Set<string>();
@@ -37,7 +44,7 @@ export function ReminderWatcher() {
         if (fired.has(reminder.id)) continue;
         fired.add(reminder.id);
 
-        const note = notes.find((item) => item.id === reminder.note_id);
+        const note = notesRef.current.find((item) => item.id === reminder.note_id);
         const title = note?.title || 'یادآور یادداشت';
 
         await showLocalNotification(
@@ -65,7 +72,7 @@ export function ReminderWatcher() {
     void check();
     const interval = setInterval(() => void check(), CHECK_INTERVAL);
     return () => clearInterval(interval);
-  }, [notes, router, userId]);
+  }, [router, userId]);
 
   return null;
 }
