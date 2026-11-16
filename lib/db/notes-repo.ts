@@ -97,7 +97,8 @@ export function buildLocalNote(draft: NoteDraft, existing?: LocalNote): LocalNot
   return {
     id: draft.id,
     user_id: draft.userId,
-    folder_id: draft.folderId ?? existing?.folder_id ?? null,
+    // `null` explicitly moves the note to the root; `undefined` keeps the folder.
+    folder_id: draft.folderId === undefined ? (existing?.folder_id ?? null) : draft.folderId,
     title,
     content_text: text,
     icon: draft.icon ?? existing?.icon ?? null,
