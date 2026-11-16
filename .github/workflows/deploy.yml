@@ -52,26 +52,38 @@ jobs:
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           NEXT_PUBLIC_STATIC_EXPORT: 'true'
           NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
-          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
+          # Optional: defaults to the Pages URL when the variable is absent.
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL || format('https://{0}.github.io/{1}/', github.repository_owner, github.event.repository.name) }}
           # The assistant needs a server route; it stays off on Pages.
           NEXT_PUBLIC_AI_ENABLED: 'false'
         run: npm run build:static
 
       - name: Verify artifact
+        env:
+          SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          BASE: /${{ github.event.repository.name }}
         run: |
           set -e
-          test -f out/.nojekyll || { echo "missing .nojekyll"; exit 1; }
-          test -f out/404.html || { echo "missing 404.html"; exit 1; }
-          test -f out/index.html || { echo "missing index.html"; exit 1; }
-          base="/${{ github.event.repository.name }}"
-          grep -q "$base/_next/" out/index.html || { echo "assets not under $base"; exit 1; }
-          if [ -n "${{ vars.NEXT_PUBLIC_SUPABASE_URL }}" ]; then
-            grep -q "${{ vars.NEXT_PUBLIC_SUPABASE_URL }}" out/index.html \
-              || echo "::warning::Supabase URL not found in the export — check repository variables"
-          else
-            echo "::error::NEXT_PUBLIC_SUPABASE_URL repository variable is not set"
+
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "::error title=Supabase variables are missing::Add BOTH repository variables (Settings -> Secrets and variables -> Actions -> Variables): NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY, then re-run this workflow."
             exit 1
           fi
+
+          test -f out/.nojekyll || { echo "::error::missing .nojekyll"; exit 1; }
+          test -f out/404.html || { echo "::error::missing 404.html"; exit 1; }
+          test -f out/index.html || { echo "::error::missing index.html"; exit 1; }
+
+          grep -q "$BASE/_next/" out/index.html || { echo "::error::assets are not under $BASE"; exit 1; }
+          grep -q "$SUPABASE_URL" out/index.html || { echo "::error::the Supabase URL did not make it into the bundle"; exit 1; }
+
+          if [ -n "$SERVICE_KEY" ] && grep -rq "$SERVICE_KEY" out; then
+            echo "::error::service-role key found in the export"; exit 1
+          fi
+
+          echo "artifact ok: $(find out -type f | wc -l) files under $BASE"
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
