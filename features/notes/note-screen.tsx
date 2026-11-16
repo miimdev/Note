@@ -197,6 +197,7 @@ export function NoteScreen({ noteId }: { noteId: string }) {
               <ExportMenu noteId={noteId} title={note.title} content={content} />
               <AiPanel
                 text={docToText(content)}
+                insertLabel="کپی نتیجه"
                 onInsert={(value) => {
                   void navigator.clipboard
                     .writeText(value)

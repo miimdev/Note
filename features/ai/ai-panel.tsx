@@ -26,7 +26,16 @@ const ACTIONS: { id: Action; label: string }[] = [
 ];
 
 /** Optional assistant, hidden unless NEXT_PUBLIC_AI_ENABLED is true. */
-export function AiPanel({ text, onInsert }: { text: string; onInsert?: (value: string) => void }) {
+export function AiPanel({
+  text,
+  onInsert,
+  insertLabel = 'درج در یادداشت',
+}: {
+  text: string;
+  onInsert?: (value: string) => void;
+  /** The editor cannot always accept an insert, so callers set the real action. */
+  insertLabel?: string;
+}) {
   const [open, setOpen] = React.useState(false);
   const [action, setAction] = React.useState<Action>('summarize');
   const [result, setResult] = React.useState('');
@@ -102,7 +111,7 @@ export function AiPanel({ text, onInsert }: { text: string; onInsert?: (value: s
                 setOpen(false);
               }}
             >
-              افزودن به یادداشت
+              {insertLabel}
             </Button>
           )}
         </DialogContent>
