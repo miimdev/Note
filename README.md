@@ -253,7 +253,7 @@ RLS (کاربر دیگر صفر ردیف می‌بیند)، `anon` بدون gran
 npm run typecheck    # TypeScript strict
 npm run lint         # ESLint (next/core-web-vitals + prettier)
 npm run format       # Prettier
-npm test             # Vitest — ۷۸ تست واحد
+npm test             # Vitest — ۸۴ تست واحد
 npm run test:e2e     # Playwright (نیازمند نصب مرورگر)
 ```
 
@@ -292,7 +292,7 @@ CI: `.github/workflows/ci.yml` → typecheck، lint، prettier check، تست، 
 - [x] اشتراک عمومی با token/انقضا، خروجی Markdown/HTML/PDF/zip، ورود Markdown
 - [x] PWA (manifest + service worker + صفحه آفلاین) + فونت self-hosted
 - [x] دستیار AI با OpenRouter پشت feature flag و rate limit
-- [x] تست واحد (۷۸)، E2E، CI، ESLint/Prettier، README و مستندات
+- [x] تست واحد (۸۴)، E2E، CI، ESLint/Prettier، README و مستندات
 
 **باقی‌مانده / پیشنهاد بهبود**
 
