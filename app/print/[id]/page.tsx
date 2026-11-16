@@ -15,15 +15,16 @@ export default async function PrintPage({ params, searchParams }: Params) {
   const { auto } = await searchParams;
 
   type PrintNote = { title: string; content: NoteContent; updated_at: string; icon: string | null };
+
+  // `redirect()` works by throwing, so it must stay outside the try/catch below.
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect(`/login?next=/print/${id}`);
+
   let note: PrintNote | null = null;
-
   try {
-    const supabase = await createSupabaseServerClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) redirect(`/login?next=/print/${id}`);
-
     const { data } = await supabase
       .from('notes')
       .select('title, content, updated_at, icon')
