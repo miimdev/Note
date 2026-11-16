@@ -4,6 +4,8 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Folder, Note, Tag, Template, Reminder } from '@/types/database.types';
 import { getDb } from '@/lib/db/local-db';
 import { toSummary } from '@/lib/db/notes-repo';
+import { mergeNote } from '@/lib/sync-merge';
+import type { LocalNote } from '@/types/domain';
 
 export const NOTE_COLUMNS =
   'id,user_id,folder_id,title,content,content_text,icon,cover_url,is_pinned,is_favorite,is_archived,deleted_at,daily_date,version,last_edited_at,created_at,updated_at';
@@ -38,19 +40,43 @@ export async function pullNotes(client: SupabaseClient, userId: string, since?: 
   const rows = (data ?? []) as Note[];
   const localById = new Map((await db.notes.toArray()).map((note) => [note.id, note]));
 
-  const payload = rows
-    .filter((row) => !localById.get(row.id)?.dirty)
-    .map((row) => ({
+  const payload: LocalNote[] = [];
+  const conflicts: Note[] = [];
+
+  for (const row of rows) {
+    const local = localById.get(row.id);
+
+    if (local?.dirty) {
+      // Local edits are pending. Only a *newer* server copy is a real conflict;
+      // otherwise the outbox wins and nothing is lost.
+      const outcome = mergeNote({
+        local: {
+          id: local.id,
+          title: local.title,
+          content: local.content ?? { type: 'doc', content: [] },
+          updated_at: local.updated_at,
+          version: local.version,
+          dirty: true,
+        },
+        remote: row,
+        baseVersion: local.base_version ?? null,
+      });
+      if (outcome.kind === 'conflict') conflicts.push(row);
+      continue;
+    }
+
+    payload.push({
       ...toSummary(row),
       content: row.content,
       dirty: 0 as const,
       pending_op: null,
       base_version: row.version,
       server_updated_at: row.updated_at,
-    }));
+    });
+  }
 
   if (payload.length > 0) await db.notes.bulkPut(payload);
-  return { rows, newest: rows[0]?.updated_at ?? since ?? null };
+  return { rows, conflicts, newest: rows[0]?.updated_at ?? since ?? null };
 }
 
 export async function pullFolders(client: SupabaseClient, userId: string) {

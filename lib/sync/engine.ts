@@ -199,8 +199,13 @@ export class SyncEngine {
   async pullIncremental(force = false) {
     const last = force ? null : await getLastSyncAt();
     try {
-      const { newest } = await pullNotes(this.client, this.userId, last);
+      const { newest, conflicts } = await pullNotes(this.client, this.userId, last);
       if (newest) await setLastSyncAt(newest);
+      // Conflicts can also be discovered while catching up after being offline,
+      // not only through Realtime.
+      for (const remote of conflicts) {
+        this.conflictListeners.forEach((listener) => listener({ noteId: remote.id, remote }));
+      }
       useSyncStore.getState().markSynced();
       this.notify();
     } catch {
