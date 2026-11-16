@@ -1,0 +1,32 @@
+name: Probe vars
+
+on:
+  push:
+    branches: [arena/26f3cbbe-note]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Which values arrived
+        env:
+          V_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+          V_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          S_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          S_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          V_SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          V_SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
+          V_ANON_KEY: ${{ vars.ANON_KEY }}
+        run: |
+          name() { [ -n "$1" ] && echo "$2: present (length ${#1})" || echo "$2: MISSING"; }
+          name "$V_URL"  "vars.NEXT_PUBLIC_SUPABASE_URL"
+          name "$V_KEY"  "vars.NEXT_PUBLIC_SUPABASE_ANON_KEY"
+          name "$S_URL"  "secrets.NEXT_PUBLIC_SUPABASE_URL"
+          name "$S_KEY"  "secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY"
+          name "$V_SUPABASE_URL" "vars.SUPABASE_URL"
+          name "$V_SUPABASE_ANON_KEY" "vars.SUPABASE_ANON_KEY"
+          name "$V_ANON_KEY" "vars.ANON_KEY"
