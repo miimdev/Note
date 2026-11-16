@@ -1,6 +1,6 @@
 'use client';
 
-import * as React from 'react';
+import { useEditorState, type Editor } from '@tiptap/react';
 import { countCharacters, countWords, readingTimeMinutes } from '@/lib/editor/content';
 import { toPersianDigits } from '@/lib/jalali';
 
@@ -8,10 +8,23 @@ import { toPersianDigits } from '@/lib/jalali';
  * Floating live counters for the focus mode (word count + reading time),
  * kept separate from the toolbar so the editor surface stays calm.
  */
-export function EditorStats({ text }: { text: string }) {
-  const words = React.useMemo(() => countWords(text), [text]);
-  const chars = React.useMemo(() => countCharacters(text), [text]);
-  const minutes = readingTimeMinutes(words, 'fa');
+export function EditorStats({ editor }: { editor: Editor }) {
+  const stats = useEditorState({
+    editor,
+    selector: ({ editor: instance }) => {
+      const text = instance.getText();
+      const words = countWords(text);
+      return {
+        words,
+        chars: countCharacters(text),
+        minutes: readingTimeMinutes(words, 'fa'),
+      };
+    },
+  });
+
+  const words = stats?.words ?? 0;
+  const chars = stats?.chars ?? 0;
+  const minutes = stats?.minutes ?? 0;
 
   return (
     <div

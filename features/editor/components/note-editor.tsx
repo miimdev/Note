@@ -12,7 +12,6 @@ import { useAutosave } from '../use-autosave';
 import { DocStats } from './doc-stats';
 import { cn } from '@/lib/utils';
 import { useUiStore } from '@/store/ui-store';
-import { docToText } from '@/lib/editor/content';
 import { useOnline } from '@/hooks/use-online';
 import { SlashImageDialog } from './slash-image-dialog';
 
@@ -142,7 +141,7 @@ export function NoteEditor({
         userId={userId}
       />
 
-      <EditorStats text={editor ? docToText(editor.getJSON() as NoteContent) : ''} />
+      <EditorStats editor={editor} />
     </div>
   );
 }
